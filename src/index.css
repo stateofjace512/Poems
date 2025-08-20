@@ -1,0 +1,309 @@
+@import 'tailwindcss/base';
+@import 'tailwindcss/components';
+@import 'tailwindcss/utilities';
+
+/* Load Segoe UI Light font */
+@font-face {
+  font-family: 'Segoe UI Light';
+  src: url('/Segoe UI Light.woff2') format('woff2');
+  font-weight: 300;
+  font-style: normal;
+  font-display: swap;
+}
+
+/* Set Inter as default font */
+html {
+  font-family: 'Segoe UI Light', 'Inter', ui-sans-serif, system-ui, sans-serif;
+}
+
+/* Animation classes */
+@keyframes blob {
+  0% {
+    transform: translate(0px, 0px) scale(1);
+  }
+  33% {
+    transform: translate(30px, -50px) scale(1.1);
+  }
+  66% {
+    transform: translate(-20px, 20px) scale(0.9);
+  }
+  100% {
+    transform: translate(0px, 0px) scale(1);
+  }
+}
+
+.animate-blob {
+  animation: blob 7s infinite;
+}
+
+.animation-delay-2000 {
+  animation-delay: 2s;
+}
+
+.animation-delay-4000 {
+  animation-delay: 4s;
+}
+
+/* Respect reduced motion preference */
+@media (prefers-reduced-motion: reduce) {
+  .animate-blob {
+    animation: none;
+  }
+}
+
+/* Focus styles for accessibility */
+.focus-visible {
+  outline: 2px solid #3b82f6;
+  outline-offset: 2px;
+}
+
+/* Rainbow border animation */
+@keyframes rainbow-border {
+  0% { border-color: #ff0000; }
+  16.66% { border-color: #ff8000; }
+  33.33% { border-color: #ffff00; }
+  50% { border-color: #00ff00; }
+  66.66% { border-color: #0080ff; }
+  83.33% { border-color: #8000ff; }
+  100% { border-color: #ff0000; }
+}
+
+.rainbow-hover {
+  position: relative;
+  display: inline-block;
+  border-radius: 0;            /* inner element stays square */
+  overflow: visible;
+  z-index: 0;
+
+  /* shared fade value (0 -> 1) */
+  --ring-o: 0;
+}
+
+.rainbow-hover:hover { --ring-o: 1; }
+
+/* Glowing rounded ring */
+.rainbow-hover::before {
+  content: "";
+  position: absolute;
+  inset: -15px;                /* outward spread */
+  border-radius: 0.75rem;      /* keep the glow rounded */
+  background: conic-gradient(
+    from 0deg,
+    #ff004c, #ff8a00, #ffd400, #22c55e, #06b6d4, #3b82f6, #a855f7, #ff004c
+  );
+  filter: blur(20px);
+  opacity: var(--ring-o);
+  transition: opacity 300ms ease;
+  z-index: -2;
+  animation: rainbow-spin 6s linear infinite;
+  pointer-events: none;        /* prevent hover flicker */
+  will-change: opacity, transform;
+}
+
+/* Thin square outline */
+.rainbow-hover::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border: 2px solid currentColor;  /* or any color you want */
+  border-radius: 0;                 /* square */
+  opacity: var(--ring-o);
+  transition: opacity 300ms ease;
+  z-index: -1;
+  pointer-events: none;             /* prevent hover flicker */
+  will-change: opacity;
+}
+
+@keyframes rainbow-spin {
+  from { transform: rotate(0deg); }
+  to   { transform: rotate(360deg); }
+}
+
+@keyframes rainbow-text {
+  0% { color: #ff0000; }
+  16.66% { color: #ff8000; }
+  33.33% { color: #ffff00; }
+  50% { color: #00ff00; }
+  66.66% { color: #0080ff; }
+  83.33% { color: #8000ff; }
+  100% { color: #ff0000; }
+}
+
+.rainbow-hover {
+  transition: all 0.3s ease;
+  border: 2px solid transparent;
+}
+
+@media (hover: hover) {
+  .rainbow-hover:hover {
+    animation: rainbow-border 2s linear infinite, rainbow-glow 2s linear infinite;
+  }
+  
+  .rainbow-text-hover:hover {
+    animation: rainbow-text 2s linear infinite;
+  }
+}
+
+/* Black-to-rainbow link text effect for skeuomorphic buttons */
+/* Base: keep text solid black */
+.link-text-black-to-rainbow {
+  color: #000;
+  -webkit-text-fill-color: #000;
+  background: none;
+  -webkit-background-clip: initial;
+}
+
+/* When the parent button is hovered */
+a:hover .link-text-black-to-rainbow {
+  background: linear-gradient(
+    90deg,
+    #ff004c,
+    #ff8a00,
+    #ffd400,
+    #22c55e,
+    #06b6d4,
+    #3b82f6,
+    #a855f7,
+    #ff004c
+  );
+  background-size: 200% 100%;
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  animation: rainbow-pan 1.25s linear infinite;
+}
+
+/* Additional animations for BTS page */
+@keyframes tilt {
+  0%, 50%, 100% {
+    transform: rotate(0deg);
+  }
+  25% {
+    transform: rotate(1deg);
+  }
+  75% {
+    transform: rotate(-1deg);
+  }
+}
+
+.animate-tilt {
+  animation: tilt 10s infinite linear;
+}
+
+/* Modal animations */
+.modal-enter {
+  animation: modalFadeIn 0.3s ease-out;
+}
+
+@keyframes modalFadeIn {
+  from {
+    opacity: 0;
+    transform: scale(0.9);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+/* Theme toggle button */
+.theme-toggle {
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0.5rem;
+  border-radius: 0.5rem;
+  transition: all 0.2s ease;
+}
+
+.theme-toggle:hover {
+  background-color: rgba(0, 0, 0, 0.1);
+}
+
+.dark .theme-toggle:hover {
+  background-color: rgba(255, 255, 255, 0.1);
+}
+
+/* Rainbow animation utilities */
+@keyframes rainbow-pan {
+  from { background-position: 0% 50%; }
+  to   { background-position: 200% 50%; }
+}
+
+/* Shared rainbow gradient */
+.rainbow-bg {
+  background: linear-gradient(
+    90deg,
+    #ff004c,
+    #ff8a00,
+    #ffd400,
+    #22c55e,
+    #06b6d4,
+    #3b82f6,
+    #a855f7,
+    #ff004c
+  );
+  background-size: 200% 100%;
+}
+
+/* Text becomes animated rainbow on hover */
+.rainbow-text-hover:hover {
+  background: linear-gradient(
+    90deg,
+    #ff004c,
+    #ff8a00,
+    #ffd400,
+    #22c55e,
+    #06b6d4,
+    #3b82f6,
+    #a855f7,
+    #ff004c
+  );
+  background-size: 200% 100%;
+  color: transparent !important;
+  -webkit-background-clip: text;
+  background-clip: text;
+  animation: rainbow-pan 1.25s linear infinite;
+}
+
+/* Direct rainbow text class for simpler usage */
+.rainbow-text {
+  background: linear-gradient(
+    90deg,
+    #ff004c,
+    #ff8a00,
+    #ffd400,
+    #22c55e,
+    #06b6d4,
+    #3b82f6,
+    #a855f7,
+    #ff004c
+  );
+  background-size: 200% 100%;
+  color: transparent !important;
+  -webkit-background-clip: text;
+  background-clip: text;
+  animation: rainbow-pan 1.25s linear infinite;
+}
+
+/* Animated rainbow underline on hover (works for icons too) */
+.rainbow-underline-hover {
+  position: relative;
+}
+.rainbow-underline-hover::after {
+  content: "";
+  position: absolute;
+  left: 0; bottom: -2px;
+  height: 2px; width: 100%;
+  opacity: 0;
+  transition: opacity 150ms ease;
+  border-radius: 9999px;
+  /* inherit the animated gradient */
+  background: inherit;
+  background-size: inherit;
+  background-position: inherit;
+}
+.rainbow-underline-hover:hover::after {
+  opacity: 1;
+  animation: rainbow-pan 1.25s linear infinite;
+}

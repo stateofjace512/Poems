@@ -62,7 +62,6 @@ export default function SongPage({
       
             {/* Lyrics button */}
             <EmbossedLink href="/" className="inline-flex items-center space-x-2">
-              <ArrowRight className="w-4 h-4" />
               <span>View All Lyrics</span>
             </EmbossedLink>
           </div>

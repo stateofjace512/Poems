@@ -47,7 +47,7 @@ export default function SongPage({
           <div className="mb-6">
             <EmbossedLink href="/" className="inline-flex items-center space-x-2">
               <ArrowLeft className="w-4 h-4" />
-              <span>Back to Home</span>
+              <span>Lyrics Home</span>
             </EmbossedLink>
           </div>
 

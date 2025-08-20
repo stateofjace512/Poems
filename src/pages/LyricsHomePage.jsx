@@ -8,7 +8,7 @@ export default function LyricsHomePage() {
       title: 'The Sweet Tea Tragedies',
       artist: 'Georgia Wixen',
       date: 'coming 9/19/2025',
-      cover: 'https://s3.amazonaws.com/gather.fandalism.com/800x800%2D9759764%2D%2DC36AE360%2DAB1D%2D404C%2DAC1986A16472E946%2D%2Dmod%2D1753095481%2Ejpg',
+      cover: 'https://i.postimg.cc/XnzbZ5kp/TSSTCDFRONTEDIT.jpg',
       alt: 'The Sweet Tea Tragedies cover',
       songs: [], // Coming soon
     },

@@ -1,6 +1,7 @@
 import React from 'react';
 import { Routes, Route, BrowserRouter } from 'react-router-dom';
 import LyricsHomePage from './pages/LyricsHomePage';
+import NotFound from './pages/NotFound';
 
 // Import all song components
 import AskMama from './songs/AskMama';
@@ -23,7 +24,7 @@ function App() {
     <BrowserRouter>
       <Routes>
         <Route path="/" element={<LyricsHomePage />} />
-        
+
         {/* Individual song routes */}
         <Route path="/song/oh-there-it-is" element={<OhThereItIs />} />
         <Route path="/song/ill-ask-mama" element={<AskMama />} />
@@ -39,6 +40,9 @@ function App() {
         <Route path="/song/hair-me-out" element={<HairMeOut />} />
         <Route path="/song/santas-on-pto" element={<SantasOnPTO />} />
         <Route path="/song/hold-secure-evacuate" element={<HoldSecureEvacuate />} />
+
+        {/* Catch-all for unmatched routes */}
+        <Route path="*" element={<NotFound />} />
       </Routes>
     </BrowserRouter>
   );

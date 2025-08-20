@@ -7,7 +7,7 @@ export default function NotFound() {
     if (document.referrer && document.referrer !== window.location.href) {
       window.history.back();
     } else {
-      window.location.href = "/";
+      window.location.href = "https://misterjk.com/";
     }
   };
 
@@ -68,7 +68,7 @@ export default function NotFound() {
                   className="inline-flex items-center justify-center rounded-md border border-neutral-300 bg-gradient-to-b from-white to-neutral-200 text-neutral-900 shadow-[inset_0_1px_0_rgba(255,255,255,0.85),0_2px_6px_rgba(0,0,0,0.12)] active:shadow-inner active:translate-y-px focus:outline-none focus:ring-2 focus:ring-blue-500/60 transition-all duration-200 hover:shadow-lg hover:-translate-y-0.5 px-8 py-4 text-lg font-semibold"
                 >
                   <span className="link-text-black-to-rainbow">
-                    ← Return to Previous Page
+                    ← Return Home
                   </span>
                 </button>
               </div>

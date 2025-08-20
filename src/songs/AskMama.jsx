@@ -71,11 +71,11 @@ To hear what I already know`;
       <div>
         <h3 className="text-xl font-semibold text-neutral-900 mb-3">Production</h3>
         <ul className="text-neutral-700 space-y-1">
-          <li><strong>Performed by:</strong> Georgia Wixen</li>
-          <li><strong>Written by:</strong> The Nice Girls</li>
+          <li><strong>Performed by:</strong> Jasmine Erica, Georgia Wixen & Danica Williams</li>
+          <li><strong>Written by:</strong> Jacob Robison</li>
           <li><strong>Produced by:</strong> Jacob Robison</li>
-          <li><strong>Mixed by:</strong> MRJK Studios</li>
-          <li><strong>Mastered by:</strong> MRJK Studios</li>
+          <li><strong>Mixed by:</strong> Jacob Robison</li>
+          <li><strong>Mastered by:</strong> Jacob Robison</li>
         </ul>
       </div>
       <div>

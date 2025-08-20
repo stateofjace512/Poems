@@ -66,9 +66,6 @@ export default function SongPage({
               <span>View All Lyrics</span>
             </EmbossedLink>
           </div>
-        </div>
-      </main>
-
           {/* Main content card */}
           <div className="rounded-2xl border border-neutral-300 bg-gradient-to-b from-white to-neutral-100 shadow-[0_10px_30px_rgba(0,0,0,0.15)] ring-1 ring-black/5 p-6 md:p-10">
             {/* Header with cover art */}

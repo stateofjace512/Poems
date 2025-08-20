@@ -1,6 +1,6 @@
 import React from 'react';
 import Navigation from './Navigation';
-import { ArrowRight, ExternalLink } from 'lucide-react';
+import { ArrowRight, ArrowLeft ExternalLink } from 'lucide-react';
 
 export default function SongPage({
   title,
@@ -50,22 +50,24 @@ export default function SongPage({
       <main className="relative z-10 min-h-screen pt-20 pb-8 px-4">
         <div className="w-full max-w-4xl mx-auto">
           {/* Button row */}
-          <div className="mb-6 flex justify-between items-center">
-            {/* Home button on the left */}
+          <div className="mb-6 flex gap-4 items-center">
+            {/* Home button */}
             <EmbossedLink
               href="https://misterjk.com/"
               className="inline-flex items-center space-x-2"
             >
-              <ArrowRight className="w-4 h-4" />
+              <ArrowLeft className="w-4 h-4" />
               <span>Return Home</span>
             </EmbossedLink>
-
-            {/* Lyrics button on the right */}
+      
+            {/* Lyrics button */}
             <EmbossedLink href="/" className="inline-flex items-center space-x-2">
               <ArrowRight className="w-4 h-4" />
               <span>View All Lyrics</span>
             </EmbossedLink>
           </div>
+        </div>
+      </main>
 
           {/* Main content card */}
           <div className="rounded-2xl border border-neutral-300 bg-gradient-to-b from-white to-neutral-100 shadow-[0_10px_30px_rgba(0,0,0,0.15)] ring-1 ring-black/5 p-6 md:p-10">

@@ -1,6 +1,6 @@
 import React from 'react';
 import Navigation from './Navigation';
-import { ArrowRight, ArrowLeft ExternalLink } from 'lucide-react';
+import { ArrowRight, ArrowLeft, ExternalLink } from 'lucide-react';
 
 export default function SongPage({
   title,

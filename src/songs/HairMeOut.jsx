@@ -56,19 +56,19 @@ So shout, so baby... hair me out`;
         <h3 className="text-xl font-semibold text-neutral-900 mb-3">Production</h3>
         <ul className="text-neutral-700 space-y-1">
           <li><strong>Artist:</strong> Georgia Wixen</li>
-          <li><strong>Written by:</strong> Georgia Wixen</li>
+          <li><strong>Written by:</strong> Jacob Ryan Robison & Georgia Wixen</li>
           <li><strong>Produced by:</strong> Jacob Robison</li>
-          <li><strong>Mixed by:</strong> MRJK Studios</li>
-          <li><strong>Mastered by:</strong> MRJK Studios</li>
+          <li><strong>Mixed by:</strong> Jacob Robison</li>
+          <li><strong>Mastered by:</strong> Jacob Robison</li>
         </ul>
       </div>
       <div>
         <h3 className="text-xl font-semibold text-neutral-900 mb-3">Release Information</h3>
         <ul className="text-neutral-700 space-y-1">
-          <li><strong>Label:</strong> MRJK Records / Georgia Wixen Records</li>
+          <li><strong>Label:</strong> Georgia Wixen Records</li>
           <li><strong>Release Date:</strong> August 8, 2025</li>
-          <li><strong>Genre:</strong> Pop/Alternative</li>
-          <li><strong>Duration:</strong> 3:28</li>
+          <li><strong>Genre:</strong> Country/Pop</li>
+          <li><strong>Duration:</strong> 3:14</li>
         </ul>
         <div className="mt-4 pt-4 border-t border-neutral-300">
           <p className="text-neutral-500 text-sm">

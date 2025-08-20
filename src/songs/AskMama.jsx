@@ -82,9 +82,9 @@ To hear what I already know`;
         <h3 className="text-xl font-semibold text-neutral-900 mb-3">Album Information</h3>
         <ul className="text-neutral-700 space-y-1">
           <li><strong>Album:</strong> The Nice Girls (Diamond Edition)</li>
-          <li><strong>Label:</strong> Georgia Wixen Records</li>
+          <li><strong>Label:</strong> MRJK Records</li>
           <li><strong>Release Date:</strong> July 4, 2025</li>
-          <li><strong>Genre:</strong> Pop/Alternative</li>
+          <li><strong>Genre:</strong> Country</li>
           <li><strong>Track:</strong> 2 of 10</li>
         </ul>
         <div className="mt-4 pt-4 border-t border-neutral-300">

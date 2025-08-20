@@ -58,10 +58,10 @@ Too bad, babe Santa's on PTO`;
         <h3 className="text-xl font-semibold text-neutral-900 mb-3">Production</h3>
         <ul className="text-neutral-700 space-y-1">
           <li><strong>Artist:</strong> Harley Towers</li>
-          <li><strong>Written by:</strong> Harley Towers</li>
+          <li><strong>Written by:</strong> Jacob Robison & Harley Towers</li>
           <li><strong>Produced by:</strong> Jacob Robison</li>
-          <li><strong>Mixed by:</strong> MRJK Studios</li>
-          <li><strong>Mastered by:</strong> MRJK Studios</li>
+          <li><strong>Mixed by:</strong> Jacob Robison</li>
+          <li><strong>Mastered by:</strong> Jacob Robison</li>
         </ul>
       </div>
       <div>
@@ -70,7 +70,7 @@ Too bad, babe Santa's on PTO`;
           <li><strong>Label:</strong> MRJK Records</li>
           <li><strong>Release Date:</strong> June 1, 2025</li>
           <li><strong>Genre:</strong> Holiday/Pop</li>
-          <li><strong>Duration:</strong> 3:15</li>
+          <li><strong>Duration:</strong> 2:46</li>
         </ul>
         <div className="mt-4 pt-4 border-t border-neutral-300">
           <p className="text-neutral-500 text-sm">

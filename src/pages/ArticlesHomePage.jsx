@@ -7,7 +7,7 @@ export default function ArticlesBlogsPage() {
     {
       title: 'The Sweet Tea Tragedies',
       description: 'Articles and insights about Georgia Wixen\'s upcoming album',
-      path: '/tsst/',
+      path: '/tstt/',
       cover: 'https://i.postimg.cc/XnzbZ5kp/TSSTCDFRONTEDIT.jpg',
       alt: 'The Sweet Tea Tragedies cover',
       comingSoon: true

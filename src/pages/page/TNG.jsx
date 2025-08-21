@@ -133,18 +133,18 @@ export default function ArticlesBlogsPage() {
                   onChange={handleSelectChange}
                   className="w-full rounded-md border border-neutral-300 bg-gradient-to-b from-white to-neutral-200 text-neutral-900 shadow-[inset_0_1px_0_rgba(255,255,255,0.85),0_2px_6px_rgba(0,0,0,0.12)] px-4 py-2 text-sm font-semibold focus:outline-none focus:ring-2 focus:ring-blue-500/60"
                 >
-                  <option value="0">Article 0: Building an Album Over State and Country Lines</option>
-                  <option value="1">Article 1: I Can't Find My Identity. Have YOU seen my identity?</option>
-                  <option value="2">Article 2: I Don't Ask Anyone But Her</option>
-                  <option value="3">Article 3: No Refunds, No Regrets</option>
-                  <option value="4">Article 4: Sharin' Location, Sharin' Way Too Much</option>
-                  <option value="5">Article 5: I Sat With That: When Silence Speaks Louder</option>
-                  <option value="6">Article 6: Inside Voice: When Silence Breaks</option>
-                  <option value="7">Article 7: The Accidental Lesbian Anthem</option>
-                  <option value="8">Article 8: The Pettiest Closure Song We Ever Wrote</option>
-                  <option value="9">Article 9: You Can't Top This (And Yes, We Knew What We Were Doing)</option>
-                  <option value="10">Article 10: Girl Go Down</option>
-                  <option value="11">Article 11: AFTERWORD</option>
+                  <option value="1">Article 1: Building an Album Over State and Country Lines</option>
+                  <option value="2">Article 2: I Can't Find My Identity. Have YOU seen my identity?</option>
+                  <option value="3">Article 3: I Don't Ask Anyone But Her</option>
+                  <option value="4">Article 4: No Refunds, No Regrets</option>
+                  <option value="5">Article 5: Sharin' Location, Sharin' Way Too Much</option>
+                  <option value="6">Article 6: I Sat With That: When Silence Speaks Louder</option>
+                  <option value="7">Article 7: Inside Voice: When Silence Breaks</option>
+                  <option value="8">Article 8: The Accidental Lesbian Anthem</option>
+                  <option value="9">Article 9: The Pettiest Closure Song We Ever Wrote</option>
+                  <option value="10">Article 10: You Can't Top This (And Yes, We Knew What We Were Doing)</option>
+                  <option value="11">Article 11: Girl Go Down</option>
+                  <option value="12">Article 12: AFTERWORD</option>
                 </select>
               </div>
             </div>

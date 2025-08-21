@@ -57,7 +57,7 @@ export default function ArticlesBlogsPage() {
 
   const handlePrevious = () => {
     if (currentArticle > 0) {
-      setCurrentArticle(currentArticle + 1);
+      setCurrentArticle(currentArticle - 1);
     }
   };
 
@@ -121,13 +121,13 @@ export default function ArticlesBlogsPage() {
                   onChange={handleSelectChange}
                   className="w-full rounded-md border border-neutral-300 bg-gradient-to-b from-white to-neutral-200 text-neutral-900 shadow-[inset_0_1px_0_rgba(255,255,255,0.85),0_2px_6px_rgba(0,0,0,0.12)] px-4 py-2 text-sm font-semibold focus:outline-none focus:ring-2 focus:ring-blue-500/60"
                 >
-                  <option value="0">Prelude</option>
-                  <option value="1">Track 1</option>
-                  <option value="2">Track 2</option>
-                  <option value="3">Track 3</option>
-                  <option value="4">Track 4</option>
-                  <option value="5">Track 5</option>
-                  <option value="6">Outro</option>
+                  <option value="1">Prelude</option>
+                  <option value="2">Track 1</option>
+                  <option value="3">Track 2</option>
+                  <option value="4">Track 3</option>
+                  <option value="5">Track 4</option>
+                  <option value="6">Track 5</option>
+                  <option value="7">Outro</option>
                 </select>
               </div>
             </div>

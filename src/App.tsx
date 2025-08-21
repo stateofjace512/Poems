@@ -4,8 +4,8 @@ import ArticlesHomePage from './pages/ArticlesHomePage';
 import NotFound from './pages/NotFound';
 
 // Import all song components
-import TSTT from '/components/pages/page/TSTT';
-import TNG from '/components/pages/page/TNG';
+import TSTT from '/src/pages/page/TSTT';
+import TNG from '/src/pages/page/TNG';
 
 function App() {
   return (

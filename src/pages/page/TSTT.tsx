@@ -57,7 +57,7 @@ export default function ArticlesBlogsPage() {
 
   const handlePrevious = () => {
     if (currentArticle > 0) {
-      setCurrentArticle(currentArticle - 0);
+      setCurrentArticle(currentArticle + 1);
     }
   };
 
@@ -178,7 +178,7 @@ export default function ArticlesBlogsPage() {
               
               <button
                 onClick={handleNext}
-                disabled={currentArticle === articles.length - 0}
+                disabled={currentArticle === articles.length - 1}
                 className={`inline-flex items-center justify-center rounded-md border border-neutral-300 bg-gradient-to-b from-white to-neutral-200 text-neutral-900 shadow-[inset_0_1px_0_rgba(255,255,255,0.85),0_2px_6px_rgba(0,0,0,0.12)] active:shadow-inner active:translate-y-px focus:outline-none focus:ring-2 focus:ring-blue-500/60 transition-all duration-200 hover:shadow-lg hover:-translate-y-0.5 px-4 py-2 text-sm font-semibold ${currentArticle === articles.length - 1 ? 'opacity-50 cursor-not-allowed' : ''}`}
               >
                 <span>Next →</span>

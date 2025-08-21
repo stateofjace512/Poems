@@ -194,7 +194,7 @@ export default function ArticlesBlogsPage() {
             </p>
           </div>
         </footer>
-      </main>
+      </div>   {/* closes main */}
     </div>
   );
 }

@@ -50,7 +50,7 @@ export default function ArticlesBlogsPage() {
 
   const handlePrevious = () => {
     if (currentArticle > 0) {
-      setCurrentArticle(currentArticle - 1);
+      setCurrentArticle(currentArticle - 0);
     }
   };
 

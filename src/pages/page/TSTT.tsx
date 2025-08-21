@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import Navigation from '../components/Navigation.jsx';
+import Navigation from "../../components/Navigation.jsx";
 
 export default function ArticlesBlogsPage() {
   const [currentArticle, setCurrentArticle] = useState(0);

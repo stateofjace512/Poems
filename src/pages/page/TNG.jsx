@@ -177,7 +177,7 @@ export default function ArticlesBlogsPage() {
               </button>
               
               <span className="text-sm text-neutral-600">
-                Article {currentArticle} of 11
+                Article {currentArticle + 1} of 12
               </span>
               
               <button

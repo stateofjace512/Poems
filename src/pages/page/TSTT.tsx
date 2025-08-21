@@ -117,8 +117,8 @@ export default function ArticlesBlogsPage() {
               {/* Article Selector */}
               <div className="max-w-md mx-auto">
                 <select
-                  value={currentArticle}
-                  onChange={handleSelectChange}
+                  value={currentArticle + 1}   // show 1-based in dropdown
+                  onChange={(e) => setCurrentArticle(parseInt(e.target.value) - 1)} // map back to 0-based
                   className="w-full rounded-md border border-neutral-300 bg-gradient-to-b from-white to-neutral-200 text-neutral-900 shadow-[inset_0_1px_0_rgba(255,255,255,0.85),0_2px_6px_rgba(0,0,0,0.12)] px-4 py-2 text-sm font-semibold focus:outline-none focus:ring-2 focus:ring-blue-500/60"
                 >
                   <option value="1">Prelude</option>
@@ -130,7 +130,7 @@ export default function ArticlesBlogsPage() {
                   <option value="7">Outro</option>
                 </select>
               </div>
-            </div>
+
 
             {/* Article Content */}
             <div className="mb-8">
@@ -173,8 +173,9 @@ export default function ArticlesBlogsPage() {
               </button>
               
               <span className="text-sm text-neutral-600">
-                Article {currentArticle} of 7
+                Article {currentArticle + 1} of {articles.length}
               </span>
+
               
               <button
                 onClick={handleNext}

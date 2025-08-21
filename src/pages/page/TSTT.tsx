@@ -142,18 +142,18 @@ export default function ArticlesBlogsPage() {
                   <p className="text-sm text-neutral-600">{currentArticleData.date}</p>
                 </div>
 
-            {/* Audio Player at the top */}
-            {currentArticleData.audio_file && (
-              <div className="mb-6">
-                <audio
-                  controls
-                  className="w-full"
-                  src={currentArticleData.audio_file}
-                >
-                  Your browser does not support the audio element.
-                </audio>
-              </div>
-            )}
+                {/* Audio Player at the top */}
+                {currentArticleData.audio_file && (
+                  <div className="mb-6">
+                    <audio
+                      controls
+                      className="w-full"
+                      src={currentArticleData.audio_file}
+                    >
+                      Your browser does not support the audio element.
+                    </audio>
+                  </div>
+                )}
                 
                 <div 
                   className="prose prose-neutral max-w-none text-neutral-700 leading-relaxed"
@@ -175,7 +175,6 @@ export default function ArticlesBlogsPage() {
               <span className="text-sm text-neutral-600">
                 Article {currentArticle + 1} of {articles.length}
               </span>
-
               
               <button
                 onClick={handleNext}
@@ -184,17 +183,18 @@ export default function ArticlesBlogsPage() {
               >
                 <span>Next →</span>
               </button>
-          </div>
+            </div>
+          </div>  
+
+          <footer className="text-center mt-10 px-4 py-6">
+            <div className="mx-auto inline-block rounded-xl border border-neutral-300 bg-gradient-to-b from-neutral-50 to-neutral-200 px-4 py-3 shadow-[inset_0_1px_0_rgba(255,255,255,0.8),0_8px_20px_rgba(0,0,0,0.15)]">
+              <p className="text-xs text-neutral-700">
+                © MRJK Records, a division of Jake Robison Records. © Georgia Wixen Records, a division of Jake Robison Records.
+              </p>
+            </div>
+          </footer>
         </div>  
-  
-        <footer className="text-center mt-10 px-4 py-6">
-          <div className="mx-auto inline-block rounded-xl border border-neutral-300 bg-gradient-to-b from-neutral-50 to-neutral-200 px-4 py-3 shadow-[inset_0_1px_0_rgba(255,255,255,0.8),0_8px_20px_rgba(0,0,0,0.15)]">
-            <p className="text-xs text-neutral-700">
-              © MRJK Records, a division of Jake Robison Records. © Georgia Wixen Records, a division of Jake Robison Records.
-            </p>
-          </div>
-        </footer>
-      </div>  
-    </main>
+      </main>
+    </div>
   );
 }

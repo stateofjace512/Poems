@@ -3,8 +3,8 @@ import { Routes, Route, BrowserRouter } from 'react-router-dom';
 import ArticlesHomePage from './pages/ArticlesHomePage';
 import NotFound from './pages/NotFound';
 // Import all song components
-import TSTT from '/src/pages/page/TSTT';
-import TNG from '/src/pages/page/TNG';
+import TSTT from './pages/page/TSTT.jsx';
+import TNG from './pages/page/TNG.jsx';
 
 function App() {
   return (

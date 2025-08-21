@@ -7,7 +7,7 @@ export default function ArticlesBlogsPage() {
     {
       title: 'The Sweet Tea Tragedies',
       description: 'Articles and insights about Georgia Wixen\'s upcoming album',
-      path: '/tstt/',
+      path: '/page/tstt/',
       cover: 'https://i.postimg.cc/XnzbZ5kp/TSSTCDFRONTEDIT.jpg',
       alt: 'The Sweet Tea Tragedies cover',
       comingSoon: true
@@ -15,7 +15,7 @@ export default function ArticlesBlogsPage() {
     {
       title: 'The Nice Girls',
       description: 'Behind-the-scenes stories and articles about The Nice Girls',
-      path: '/tng/',
+      path: '/page/tng/',
       cover: 'https://s3.amazonaws.com/gather.fandalism.com/800x800%2D9759764%2D%2D0C6CDD92%2D888F%2D4153%2D8D22A7371C7CA986%2D%2D0%2D%2D6081121%2D%2Dedit5%2Ejpg',
       alt: 'The Nice Girls Diamond Edition cover',
       comingSoon: false

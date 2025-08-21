@@ -3,7 +3,7 @@ import Navigation from "../../components/Navigation.jsx";
 
 export default function ArticlesBlogsPage() {
   const [currentArticle, setCurrentArticle] = useState(0);
-
+ 
   const articles = [
     {
       title: "Prelude",

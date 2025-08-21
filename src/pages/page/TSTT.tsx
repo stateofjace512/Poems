@@ -187,15 +187,16 @@ export default function ArticlesBlogsPage() {
           </div> {/* closes rounded-2xl wrapper */}
         </div>   {/* closes w-full max-w-4xl mx-auto */}
   
-        <footer className="text-center mt-10 px-4 py-6">
-          <div className="mx-auto inline-block rounded-xl border border-neutral-300 bg-gradient-to-b from-neutral-50 to-neutral-200 px-4 py-3 shadow-[inset_0_1px_0_rgba(255,255,255,0.8),0_8px_20px_rgba(0,0,0,0.15)]">
-            <p className="text-xs text-neutral-700">
-              © MRJK Records, a division of Jake Robison Records. © Georgia Wixen Records, a division of Jake Robison Records.
-            </p>
-          </div>
-        </footer>
-      </div>   {/* closes main */}
+          <footer className="text-center mt-10 px-4 py-6">
+            <div className="mx-auto inline-block rounded-xl border border-neutral-300 bg-gradient-to-b from-neutral-50 to-neutral-200 px-4 py-3 shadow-[inset_0_1px_0_rgba(255,255,255,0.8),0_8px_20px_rgba(0,0,0,0.15)]">
+              <p className="text-xs text-neutral-700">
+                © MRJK Records, a division of Jake Robison Records. © Georgia Wixen Records, a division of Jake Robison Records.
+                The Nice Girls™ name, photos, and music are the property of Jake Robison Records.
+              </p>
+            </div>
+          </footer>
+        </div>
+      </main>
     </div>
   );
 }
-

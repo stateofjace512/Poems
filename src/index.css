@@ -309,7 +309,6 @@ a:hover .link-text-black-to-rainbow {
 }
 
 
-
 @font-face {
   font-family: 'TNG';
   src: url('/tng.woff2') format('woff2');
@@ -324,4 +323,367 @@ a:hover .link-text-black-to-rainbow {
   -webkit-text-fill-color: transparent;
   line-height: 1.2;   /* or try 0.9 if you want tighter */
   display: inline-block; /* avoids inheriting huge line box */
+}
+
+.gradient-border {
+  position: relative;
+  display: inline-block;
+  border-radius: 0.2rem;   /* subtle curve, not too pill-like */
+  padding: 0.02rem 0.25rem; /* tiny inset — hugs text */
+  font-size: 0.7rem;       /* small but still bold */
+  font-weight: 700;
+  line-height: 1;          /* tight vertical fit */
+  color: white;
+  background: #1a1a1a;     /* solid inner background */
+  z-index: 0;
+}
+
+.gradient-border::before {
+  content: "";
+  position: absolute;
+  inset: -1px; /* super thin border */
+  border-radius: inherit;
+  background: linear-gradient(270deg, #ef4444, #b91c1c, #ef4444);
+  background-size: 400% 400%;
+  animation: gradientMove 3s linear infinite;
+  z-index: -1;
+}
+
+@keyframes gradientMove {
+  0%   { background-position: 0% 50%; }
+  100% { background-position: 200% 50%; }
+}
+
+/* =============================
+   DARK MODE IMPLEMENTATION
+   ============================= */
+
+/* Root dark mode class */
+html.dark-mode {
+  background-color: #000000;
+}
+
+html.dark-mode body {
+  background-color: #000000;
+  color: #ffffff;
+}
+
+/* =============================
+   BACKGROUND FIXES
+   ============================= */
+
+/* Remove the paper texture overlay in dark mode completely */
+html.dark-mode .min-h-screen > div[aria-hidden="true"] {
+  display: none !important;
+}
+
+/* SVG noise filter - hide in dark mode */
+html.dark-mode svg[aria-hidden="true"] {
+  display: none !important;
+}
+
+/* Dark mode backgrounds */
+html.dark-mode .bg-white {
+  background-color: #111111 !important;
+}
+
+/* All gradient backgrounds to dark equivalents */
+html.dark-mode .bg-gradient-to-b {
+  background: #111111 !important;
+}
+
+html.dark-mode [style*="background"] {
+  background: #111111 !important;
+}
+
+/* =============================
+   NAVIGATION
+   ============================= */
+
+/* Navigation background */
+html.dark-mode nav {
+  background-color: rgba(17, 17, 17, 0.9) !important;
+  backdrop-filter: blur(12px);
+  border-color: rgba(255, 255, 255, 0.1) !important;
+}
+
+/* Favicon inversion */
+html.dark-mode img[src="/favicon.png"] {
+  filter: invert(1) !important;
+}
+
+/* =============================
+   TYPOGRAPHY - CLEAN WHITE TEXT
+   ============================= */
+
+/* All headings to pure white */
+html.dark-mode h1,
+html.dark-mode h2,
+html.dark-mode h3,
+html.dark-mode h4 {
+  color: #ffffff !important;
+}
+
+/* All body text to pure white */
+html.dark-mode p,
+html.dark-mode span,
+html.dark-mode div,
+html.dark-mode li {
+  color: #ffffff !important;
+}
+
+/* Tailwind text classes - force white */
+html.dark-mode .text-neutral-900,
+html.dark-mode .text-neutral-800,
+html.dark-mode .text-neutral-700,
+html.dark-mode .text-gray-900,
+html.dark-mode .text-gray-800,
+html.dark-mode .text-gray-700 {
+  color: #ffffff !important;
+}
+
+html.dark-mode .text-neutral-600,
+html.dark-mode .text-gray-600 {
+  color: #e5e5e5 !important;
+}
+
+html.dark-mode .text-neutral-500,
+html.dark-mode .text-gray-500 {
+  color: #cccccc !important;
+}
+
+/* Links */
+html.dark-mode a:not(.rainbow-text-hover) {
+  color: #60a5fa !important;
+}
+
+/* =============================
+   CARDS & CONTAINERS
+   ============================= */
+
+/* Main cards */
+html.dark-mode .rounded-xl.border,
+html.dark-mode .rounded-2xl.border,
+html.dark-mode .rounded-lg.border {
+  background-color: #111111 !important;
+  border-color: #333333 !important;
+}
+
+/* Remove all shadows in dark mode - they create the muddy effect */
+html.dark-mode [class*="shadow-"] {
+  box-shadow: none !important;
+}
+
+/* Add subtle borders instead of shadows for definition */
+html.dark-mode .rounded-xl.border,
+html.dark-mode .rounded-2xl.border {
+  border: 1px solid #333333 !important;
+}
+
+/* =============================
+   BUTTONS
+   ============================= */
+
+/* Dark mode buttons — exclude theme toggle */
+html.dark-mode button:not([aria-label^="Switch to"]),
+html.dark-mode .embossed-btn {
+  background: #222222 !important;
+  color: #ffffff !important;
+  border-color: #444444 !important;
+  box-shadow: none !important;
+}
+
+
+html.dark-mode button:hover,
+html.dark-mode .embossed-btn:hover {
+  background: #333333 !important;
+}
+
+/* =============================
+   BADGES
+   ============================= */
+
+/* Green badges */
+html.dark-mode .bg-green-50 {
+  background-color: #064e3b !important;
+}
+
+html.dark-mode .text-green-700 {
+  color: #10b981 !important;
+}
+
+html.dark-mode .border-green-200 {
+  border-color: #065f46 !important;
+}
+
+/* Red badges */
+html.dark-mode .bg-red-50 {
+  background-color: #7f1d1d !important;
+}
+
+html.dark-mode .text-red-600 {
+  color: #ef4444 !important;
+}
+
+html.dark-mode .border-red-200 {
+  border-color: #991b1b !important;
+}
+
+/* =============================
+   BORDERS
+   ============================= */
+
+html.dark-mode .border-neutral-200,
+html.dark-mode .border-neutral-300 {
+  border-color: #333333 !important;
+}
+
+/* =============================
+   HOVER STATES
+   ============================= */
+
+html.dark-mode .hover\:bg-neutral-50:hover {
+  background-color: #222222 !important;
+}
+
+html.dark-mode .hover\:bg-white:hover {
+  background-color: #222222 !important;
+}
+
+/* =============================
+   PRESERVE BRAND ELEMENTS
+   ============================= */
+
+/* Keep rainbow effects intact */
+html.dark-mode .rainbow-text,
+html.dark-mode .rainbow-text-hover,
+html.dark-mode .the-nice-girls,
+html.dark-mode .gradient-border {
+  filter: none !important;
+}
+
+/* Keep album covers normal */
+html.dark-mode img:not([src="/favicon.png"]) {
+  filter: none !important;
+}
+
+/* =============================
+   SPECIFIC COMPONENT FIXES
+   ============================= */
+
+/* Song page lyrics area */
+html.dark-mode .lyrics-container {
+  background-color: #0a0a0a !important;
+  color: #ffffff !important;
+}
+
+/* Footer wrapper should match the page bg */
+html.dark-mode footer {
+  background-color: #000000 !important;  /* full black */
+}
+
+/* But the inner content (the rounded box) should be the gray */
+html.dark-mode footer .rounded-xl,
+html.dark-mode footer .rounded-lg,
+html.dark-mode footer .rounded-2xl {
+  background-color: #111111 !important;
+  border-color: #333333 !important;
+}
+
+
+/* Any remaining neutral backgrounds */
+html.dark-mode .bg-neutral-50,
+html.dark-mode .bg-neutral-100 {
+  background-color: #111111 !important;
+}
+
+/* Remove any lingering overlay effects */
+html.dark-mode::before,
+html.dark-mode::after {
+  display: none !important;
+}
+
+html.dark-mode *::before,
+html.dark-mode *::after {
+  box-shadow: none !important;
+}
+
+/* =============================
+   CHORD DIAGRAMS - DARK MODE
+   ============================= */
+
+/* Remove the white rectangle background */
+html.dark-mode .chord-lyrics-container svg rect {
+  fill: transparent !important;
+  stroke: none !important;
+}
+
+/* Grid lines (frets + strings) */
+html.dark-mode .chord-lyrics-container svg line {
+  stroke: #888888 !important;   /* soft gray so dots stand out */
+}
+
+/* Text labels (X, fret numbers, chord name) */
+html.dark-mode .chord-lyrics-container svg text {
+  fill: #ffffff !important;
+  stroke: none !important;
+}
+
+/* Open string hollow circles (the "O") */
+html.dark-mode .chord-lyrics-container svg circle {
+  fill: transparent !important;
+  stroke: #ffffff !important;
+}
+
+/* Filled finger dots (detected by radius 7) */
+html.dark-mode .chord-lyrics-container svg circle[r="7"] {
+  fill: #ffffff !important;
+  stroke: #ffffff !important;
+}
+
+/* Barre strokes (the thick line) */
+html.dark-mode .chord-lyrics-container svg line[stroke-width="6"] {
+  stroke: #ffffff !important;
+  opacity: 0.9 !important;
+}
+
+/* Tooltip box behind diagrams */
+html.dark-mode .chord-tooltip {
+  background: #111111 !important;
+  border: 1px solid #333333 !important;
+  box-shadow: 0 8px 20px rgba(0,0,0,0.6) !important;
+}
+
+/* =============================
+   INLINE / TAGGED CHORDS
+   ============================= */
+
+/* Chords above lyrics */
+html.dark-mode .chord-rt {
+  color: #93c5fd !important;   /* tailwind blue-300 */
+}
+
+/* Standalone chord tags */
+html.dark-mode .chord-tag {
+  background: #1e293b !important;   /* slate-800 bg */
+  color: #93c5fd !important;        /* light blue text */
+  border-color: #3b82f6 !important; /* blue-500 border */
+}
+
+/* Legend chord names */
+html.dark-mode .chord-name {
+  color: #93c5fd !important;
+}
+
+/* Ensure hover chords stay visible in dark mode */
+html.dark-mode .chord-rt:hover {
+  color: #ffffff !important;  /* force white */
+  text-shadow: none !important;
+}
+
+
+html.dark-mode nav button {
+  background: transparent !important;
+  border: none !important;
+  box-shadow: none !important;
 }

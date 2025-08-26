@@ -5,6 +5,16 @@ export default function Navigation() {
   const [isDark, setIsDark] = useState(false);
   const [currentPath, setCurrentPath] = useState('');
 
+  // --- helpers for cookies ---
+  const setThemeCookie = (theme) => {
+    document.cookie = `theme=${theme}; path=/; domain=.misterjk.com; max-age=31536000; SameSite=Lax`;
+  };
+
+  const getThemeCookie = () => {
+    const match = document.cookie.match(/(?:^|; )theme=([^;]*)/);
+    return match ? match[1] : null;
+  };
+
   // Get current path
   useEffect(() => {
     setCurrentPath(window.location.pathname);
@@ -12,7 +22,7 @@ export default function Navigation() {
 
   // Initialize theme
   useEffect(() => {
-    const savedTheme = localStorage.getItem("theme");
+    const savedTheme = getThemeCookie();
     const systemPrefersDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
     const shouldBeDark = savedTheme ? savedTheme === "dark" : systemPrefersDark;
 
@@ -31,11 +41,12 @@ export default function Navigation() {
     return () => mediaQuery.removeEventListener("change", handleSystemThemeChange);
   }, []);
 
+  // Toggle theme + write cookie
   const toggleTheme = () => {
     const newTheme = !isDark;
     setIsDark(newTheme);
     document.documentElement.classList.toggle("dark-mode", newTheme);
-    localStorage.setItem("theme", newTheme ? "dark" : "light");
+    setThemeCookie(newTheme ? "dark" : "light");
   };
 
   const getNavLinkClasses = () => {
@@ -60,8 +71,8 @@ export default function Navigation() {
             <a href="https://misterjk.com" className={getNavLinkClasses()}>Home</a>
             <a href="https://misterjk.com/link" className={getNavLinkClasses()}>Listen</a>
             <a href="https://misterjk.com/bts" className={getNavLinkClasses()}>BTS</a>
-            <a href="/" className={getNavLinkClasses()}>Lyrics</a>
-            <a href="https://blog.misterjk.com" className={getNavLinkClasses()}>Blog</a>
+            <a href="https://lyrics.misterjk.com" className={getNavLinkClasses()}>Lyrics</a>
+            <a href="/" className={getNavLinkClasses()}>Blog</a>
           </div>
         </div>
       </div>

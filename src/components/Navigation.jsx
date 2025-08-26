@@ -7,7 +7,7 @@ export default function Navigation() {
 
   // --- helpers for cookies ---
   const setThemeCookie = (theme) => {
-    document.cookie = `theme=${theme}; path=/; domain=.misterjk.com; max-age=31536000; SameSite=Lax`;
+    document.cookie = `theme=${theme}; path=/; domain=.misterjk.com; max-age=31536000; SameSite=Lax; Secure`;
   };
 
   const getThemeCookie = () => {

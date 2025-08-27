@@ -6,14 +6,16 @@ export default function ArticlesBlogsPage() {
   const blogSections = [
     {
       title: 'The Sweet Tea Tragedies',
+      isNew: true,
       description: 'Articles and insights about Georgia Wixen\'s upcoming album',
       path: '/page/tstt/',
       cover: 'https://i.postimg.cc/XnzbZ5kp/TSSTCDFRONTEDIT.jpg',
       alt: 'The Sweet Tea Tragedies cover',
-      comingSoon: true
+      comingSoon: false
     },
     {
       title: 'The Nice Girls',
+      isNew: false,
       description: 'Behind-the-scenes stories and articles about The Nice Girls',
       path: '/page/tng/',
       cover: 'https://s3.amazonaws.com/gather.fandalism.com/800x800%2D9759764%2D%2D0C6CDD92%2D888F%2D4153%2D8D22A7371C7CA986%2D%2D0%2D%2D6081121%2D%2Dedit5%2Ejpg',
@@ -122,8 +124,13 @@ function BlogSectionTile({ section }) {
           </div>
 
           <div className="rounded-md border border-neutral-200 bg-neutral-50 px-4 py-3 shadow-[inset_0_1px_0_rgba(255,255,255,0.8)]">
-            <h3 className="text-xl font-bold text-neutral-900 mb-2">
+            <h3 className="text-xl font-bold text-neutral-900 mb-2 flex items-center gap-2">
               {section.title}
+              {section.isNew && (
+                <span className="gradient-border text-xs font-semibold px-2 py-1 rounded">
+                  NEW!
+                </span>
+              )}
             </h3>
             <p className="text-sm text-neutral-700 mb-3">
               {section.description}

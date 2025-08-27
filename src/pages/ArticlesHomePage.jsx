@@ -1,3 +1,5 @@
+import p5 from "p5";
+import Sketch from "react-p5";
 import React from 'react';
 import Navigation from '../components/Navigation';
 import { FileText, ArrowRight } from 'lucide-react';

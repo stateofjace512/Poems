@@ -1,3 +1,4 @@
+import LiquidGlassBadge from "../components/LiquidGlassBadge";
 import p5 from "p5";
 import Sketch from "react-p5";
 import React from 'react';
@@ -128,10 +129,7 @@ function BlogSectionTile({ section }) {
           <div className="rounded-md border border-neutral-200 bg-neutral-50 px-4 py-3 shadow-[inset_0_1px_0_rgba(255,255,255,0.8)]">
             <h3 className="text-xl font-bold text-neutral-900 mb-2 flex items-center gap-2">
               {section.title}
-              {section.isNew && (
-                <span className="gradient-border text-xs font-semibold px-2 py-1 rounded">
-                  NEW!
-                </span>
+              {section.isNew && <LiquidGlassBadge text="NEW!" />}
               )}
             </h3>
             <p className="text-sm text-neutral-700 mb-3">

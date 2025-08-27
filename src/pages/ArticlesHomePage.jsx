@@ -130,7 +130,6 @@ function BlogSectionTile({ section }) {
             <h3 className="text-xl font-bold text-neutral-900 mb-2 flex items-center gap-2">
               {section.title}
               {section.isNew && <LiquidGlassBadge text="NEW!" />}
-              )}
             </h3>
             <p className="text-sm text-neutral-700 mb-3">
               {section.description}

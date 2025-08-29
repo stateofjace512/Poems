@@ -33,7 +33,10 @@ export default function ArticlesBlogsPage() {
           data.response.posts.map((p) => ({
             id: p.id,
             title: p.title || p.summary || "Untitled",
-            description: p.body?.replace(/<[^>]+>/g, "").slice(0, 120) + "...",
+            description:
+              (p.summary ||
+                (p.content?.find((c) => c.type === "text")?.text ?? "")
+              ).replace(/<[^>]+>/g, "").slice(0, 120) + "...",
             date: p.date,
             link: p.post_url,
           }))

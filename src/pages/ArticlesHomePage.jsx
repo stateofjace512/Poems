@@ -30,19 +30,33 @@ export default function ArticlesBlogsPage() {
 
       if (data.response?.posts) {
         setPosts(
-          data.response.posts.map((p) => ({
-            id: p.id,
-            title: p.title || p.summary || "Untitled",
-            description:
-              (p.summary ||
-                (p.content?.find((c) => c.type === "text")?.text ?? "")
-              ).replace(/<[^>]+>/g, "").slice(0, 120) + "...",
-            date: p.date,
-            link: p.post_url,
-          }))
+          data.response.posts.map((p) => {
+            const title = p.title || p.summary || "Untitled";
+      
+            // Grab all text blocks
+            const textBlocks = (p.content || [])
+              .filter((c) => c.type === "text")
+              .map((c) => c.text.replace(/<[^>]+>/g, "").trim());
+      
+            // Pick the first block that isn't identical to the title
+            const firstNonTitleText =
+              textBlocks.find((t) => t && t !== title) ||
+              p.summary || // fallback if no non-title text
+              "";
+      
+            return {
+              id: p.id,
+              title,
+              description:
+                firstNonTitleText.slice(0, 150) +
+                (firstNonTitleText.length > 150 ? "..." : ""),
+              date: p.date,
+              link: p.post_url,
+            };
+          })
         );
       }
-    }
+
 
     fetchTumblrPoems();
   }, []);

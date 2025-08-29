@@ -25,13 +25,13 @@ function createSlug(title) {
     .replace(/[^\w\s-]/g, '') // Remove special chars
     .replace(/\s+/g, '-') // Replace spaces with dashes
     .replace(/-+/g, '-') // Replace multiple dashes with single
-    .trim('-'); // Remove leading/trailing dashes
+    .replace(/^-+|-+$/g, ''); // Remove leading/trailing dashes
 }
 
 // Get current route from URL
 function getCurrentRoute() {
   const path = window.location.pathname;
-  const match = path.match(/\/page\/(.+)$/);
+  const match = path.match(/\/poem\/(.+)$/);
   return match ? { type: 'poem', slug: match[1] } : { type: 'list' };
 }
 
@@ -40,6 +40,7 @@ export default function ArticlesBlogsPage() {
   const [currentRoute, setCurrentRoute] = useState(getCurrentRoute());
   const [posts, setPosts] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
   // Handle browser back/forward
   useEffect(() => {
@@ -55,6 +56,9 @@ export default function ArticlesBlogsPage() {
   useEffect(() => {
     async function fetchTumblrPoems() {
       try {
+        setLoading(true);
+        setError(null);
+        
         const res = await fetch("/.netlify/functions/tumblr");
         const data = await res.json();
 
@@ -77,16 +81,19 @@ export default function ArticlesBlogsPage() {
               title,
               slug: createSlug(title),
               description: firstNonTitleText.slice(0, 150) + (firstNonTitleText.length > 150 ? "..." : ""),
-              fullContent,
+              fullContent: fullContent || firstNonTitleText,
               date: p.date,
               originalLink: p.post_url,
             };
           });
 
           setPosts(processedPosts);
+        } else {
+          setError('No poems found');
         }
       } catch (error) {
         console.error('Error fetching poems:', error);
+        setError('Failed to load poems. Please try again later.');
       } finally {
         setLoading(false);
       }
@@ -97,7 +104,7 @@ export default function ArticlesBlogsPage() {
 
   // Navigation functions
   const navigateToPoem = (slug) => {
-    const newUrl = `/page/${slug}`;
+    const newUrl = `/poem/${slug}`;
     window.history.pushState({}, '', newUrl);
     setCurrentRoute({ type: 'poem', slug });
   };
@@ -109,10 +116,27 @@ export default function ArticlesBlogsPage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
+      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-neutral-50 to-neutral-100">
         <div className="text-center">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-neutral-600 mx-auto mb-4"></div>
           <p className="text-neutral-600">Loading poems...</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-neutral-50 to-neutral-100">
+        <div className="text-center">
+          <h1 className="text-2xl font-bold text-red-600 mb-4">Error Loading Poems</h1>
+          <p className="text-neutral-600 mb-4">{error}</p>
+          <button 
+            onClick={() => window.location.reload()}
+            className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+          >
+            Try Again
+          </button>
         </div>
       </div>
     );
@@ -124,14 +148,15 @@ export default function ArticlesBlogsPage() {
     
     if (!poem) {
       return (
-        <div className="min-h-screen flex items-center justify-center">
+        <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-neutral-50 to-neutral-100">
           <div className="text-center">
             <h1 className="text-2xl font-bold text-neutral-800 mb-4">Poem Not Found</h1>
             <button 
               onClick={navigateToList}
-              className="text-blue-600 hover:text-blue-700 font-medium"
+              className="text-blue-600 hover:text-blue-700 font-medium flex items-center gap-2 mx-auto"
             >
-              ← Back to Poetry Corner
+              <ArrowLeft className="w-4 h-4" />
+              Back to Poetry Corner
             </button>
           </div>
         </div>
@@ -151,9 +176,9 @@ function PoemListPage({ posts, onNavigateToPoem }) {
 
   return (
     <div className="min-h-screen relative overflow-hidden">
-      {/* Your beautiful paper background */}
+      {/* Beautiful paper background */}
       <div
-        aria-hidden
+        aria-hidden="true"
         className="absolute inset-0"
         style={{
           background:
@@ -161,7 +186,7 @@ function PoemListPage({ posts, onNavigateToPoem }) {
         }}
       />
       <svg
-        aria-hidden
+        aria-hidden="true"
         className="pointer-events-none absolute inset-0 mix-blend-multiply opacity-20"
       >
         <filter id="noiseFilter">
@@ -204,33 +229,41 @@ function PoemListPage({ posts, onNavigateToPoem }) {
 
       <main className="relative z-10 min-h-screen pt-12 pb-0 px-4">
         <div className="w-full max-w-4xl mx-auto">
-          {Object.entries(grouped).map(([month, poems]) => (
-            <div key={month} className="mb-12">
-              <div className="flex items-center justify-center mb-8">
-                <div className="flex-grow h-px bg-gradient-to-r from-transparent via-neutral-300 to-transparent"></div>
-                <div className="mx-6 rounded-full border border-neutral-300 bg-gradient-to-b from-white to-neutral-100 shadow-[0_4px_12px_rgba(0,0,0,0.1)] ring-1 ring-black/5 px-6 py-2">
-                  <div className="flex items-center gap-2 text-neutral-700">
-                    <Calendar className="w-4 h-4" />
-                    <span className="font-semibold text-lg">{month}</span>
-                  </div>
-                </div>
-                <div className="flex-grow h-px bg-gradient-to-r from-transparent via-neutral-300 to-transparent"></div>
-              </div>
-              
-              <div className="space-y-6">
-                {poems
-                  .sort((a, b) => new Date(b.date) - new Date(a.date))
-                  .map((poem, index) => (
-                    <PoemCard 
-                      key={poem.id} 
-                      poem={poem} 
-                      isEven={index % 2 === 0} 
-                      onClick={() => onNavigateToPoem(poem.slug)}
-                    />
-                  ))}
-              </div>
+          {posts.length === 0 ? (
+            <div className="text-center py-16">
+              <FileText className="w-16 h-16 text-neutral-400 mx-auto mb-4" />
+              <h2 className="text-xl font-semibold text-neutral-600 mb-2">No Poems Yet</h2>
+              <p className="text-neutral-500">Check back soon for new poetry!</p>
             </div>
-          ))}
+          ) : (
+            Object.entries(grouped).map(([month, poems]) => (
+              <div key={month} className="mb-12">
+                <div className="flex items-center justify-center mb-8">
+                  <div className="flex-grow h-px bg-gradient-to-r from-transparent via-neutral-300 to-transparent"></div>
+                  <div className="mx-6 rounded-full border border-neutral-300 bg-gradient-to-b from-white to-neutral-100 shadow-[0_4px_12px_rgba(0,0,0,0.1)] ring-1 ring-black/5 px-6 py-2">
+                    <div className="flex items-center gap-2 text-neutral-700">
+                      <Calendar className="w-4 h-4" />
+                      <span className="font-semibold text-lg">{month}</span>
+                    </div>
+                  </div>
+                  <div className="flex-grow h-px bg-gradient-to-r from-transparent via-neutral-300 to-transparent"></div>
+                </div>
+                
+                <div className="space-y-6">
+                  {poems
+                    .sort((a, b) => new Date(b.date) - new Date(a.date))
+                    .map((poem, index) => (
+                      <PoemCard 
+                        key={poem.id} 
+                        poem={poem} 
+                        isEven={index % 2 === 0} 
+                        onClick={() => onNavigateToPoem(poem.slug)}
+                      />
+                    ))}
+                </div>
+              </div>
+            ))
+          )}
 
           <footer className="text-center mt-16 px-4 py-6">
             <div className="mx-auto inline-block rounded-xl border border-neutral-300 bg-gradient-to-b from-neutral-50 to-neutral-200 px-6 py-4 shadow-[inset_0_1px_0_rgba(255,255,255,0.8),0_8px_20px_rgba(0,0,0,0.15)]">
@@ -269,8 +302,12 @@ function PoemDetailPage({ poem, onBack }) {
       }
     } else {
       // Fallback: copy to clipboard
-      navigator.clipboard.writeText(window.location.href);
-      alert('Link copied to clipboard!');
+      try {
+        await navigator.clipboard.writeText(window.location.href);
+        alert('Link copied to clipboard!');
+      } catch (err) {
+        console.log('Could not copy to clipboard:', err);
+      }
     }
   };
 
@@ -278,7 +315,7 @@ function PoemDetailPage({ poem, onBack }) {
     <div className="min-h-screen relative overflow-hidden">
       {/* Same beautiful background */}
       <div
-        aria-hidden
+        aria-hidden="true"
         className="absolute inset-0"
         style={{
           background:
@@ -286,7 +323,7 @@ function PoemDetailPage({ poem, onBack }) {
         }}
       />
       <svg
-        aria-hidden
+        aria-hidden="true"
         className="pointer-events-none absolute inset-0 mix-blend-multiply opacity-20"
       >
         <filter id="poemNoiseFilter">
@@ -336,7 +373,7 @@ function PoemDetailPage({ poem, onBack }) {
                 {/* Poem content */}
                 <div className="prose prose-lg max-w-none text-neutral-800 leading-relaxed">
                   {poem.fullContent.split('\n\n').map((paragraph, index) => (
-                    <p key={index} className="mb-6 text-lg leading-8">
+                    <p key={index} className="mb-6 text-lg leading-8 whitespace-pre-line">
                       {paragraph}
                     </p>
                   ))}
@@ -427,3 +464,5 @@ function PoemCard({ poem, isEven, onClick }) {
         </div>
       </div>
     </div>
+  );
+}

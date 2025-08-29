@@ -26,7 +26,7 @@ export default function ArticlesBlogsPage() {
   useEffect(() => {
     async function fetchTumblrPoems() {
       const apiKey = "zfgzSTPVBDa86jBZtWif8xBqXduItRE4pX3l1tWAtBT8k12qZG"; // replace with your Tumblr API key
-      const blog = "https://jrosales19.tumblr.com/";
+      const blog = "jrosales19";
       const url = `https://api.tumblr.com/v2/blog/${blog}/posts/text?api_key=${apiKey}`;
 
       const res = await fetch(url);

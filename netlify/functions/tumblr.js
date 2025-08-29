@@ -1,7 +1,7 @@
 import fetch from "node-fetch";
 
 export async function handler(event) {
-  const apiKey = process.env.TUMBLR_API_KEY;
+  const apiKey = 'zfgzSTPVBDa86jBZtWif8xBqXduItRE4pX3l1tWAtBT8k12qZG';
   const blog = "jrosales19"; // your blog
   const url = `https://api.tumblr.com/v2/blog/${blog}/posts/text?api_key=${apiKey}`;
 

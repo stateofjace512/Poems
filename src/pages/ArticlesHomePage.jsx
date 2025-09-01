@@ -221,9 +221,15 @@ export default function ArticlesBlogsPage() {
               }
               
               // FIXED: Extract full content using enhanced function
-              const fullContent = extractPoemContent(p);
+              let fullContent = extractPoemContent(p);
+              
+              // Strip title from body if duplicated
+              if (fullContent.startsWith(title)) {
+                fullContent = fullContent.slice(title.length).trimStart();
+              }
+              
               console.log('Extracted content for', title, ':', fullContent.slice(0, 100) + '...');
-              console.log('Content has line breaks:', fullContent.includes('\n'));
+
               
               // Create description from content
               const description = fullContent.slice(0, 150) + (fullContent.length > 150 ? "..." : "");

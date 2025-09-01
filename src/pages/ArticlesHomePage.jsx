@@ -2,6 +2,49 @@ import React, { useEffect, useState } from "react";
 import Navigation from "../components/Navigation";
 import { FileText, ArrowRight, Calendar, ArrowLeft, Heart, Share2 } from "lucide-react";
 
+const CACHE_DURATION = 24 * 60 * 60 * 1000; // 24 hours
+
+function getCachedData() {
+  try {
+    const cached = localStorage.getItem("poemCache");
+    const timestamp = localStorage.getItem("poemCacheTimestamp");
+    if (cached && timestamp && (Date.now() - parseInt(timestamp, 10) < CACHE_DURATION)) {
+      return JSON.parse(cached);
+    }
+  } catch (err) {
+    console.error("Error reading cache:", err);
+  }
+  return null;
+}
+
+function setCachedData(data) {
+  try {
+    localStorage.setItem("poemCache", JSON.stringify(data));
+    localStorage.setItem("poemCacheTimestamp", Date.now().toString());
+  } catch (err) {
+    console.error("Error writing cache:", err);
+  }
+}
+
+function getCachedRoutes() {
+  try {
+    const cached = localStorage.getItem("routeCache");
+    return cached ? JSON.parse(cached) : [];
+  } catch (err) {
+    console.error("Error reading route cache:", err);
+    return [];
+  }
+}
+
+function setCachedRoutes(routes) {
+  try {
+    localStorage.setItem("routeCache", JSON.stringify(routes || []));
+  } catch (err) {
+    console.error("Error writing route cache:", err);
+  }
+}
+
+
 // Helper functions
 function groupByMonth(posts) {
   const grouped = {};
@@ -34,12 +77,6 @@ function getCurrentRoute() {
   const match = path.match(/\/poem\/(.+)$/);
   return match ? { type: 'poem', slug: match[1] } : { type: 'list' };
 }
-
-// In-memory cache management (NO localStorage)
-let poemCache = null;
-let cacheTimestamp = null;
-let routeCache = [];
-const CACHE_DURATION = 24 * 60 * 60 * 1000; // 24 hours
 
 function getCachedData() {
   if (poemCache && cacheTimestamp && (Date.now() - cacheTimestamp < CACHE_DURATION)) {
@@ -301,9 +338,9 @@ export default function ArticlesBlogsPage() {
           <button 
             onClick={() => {
               // FIXED: Clear in-memory cache and reload
-              poemCache = null;
-              cacheTimestamp = null;
-              routeCache = [];
+              localStorage.removeItem("poemCache");
+              localStorage.removeItem("poemCacheTimestamp");
+              localStorage.removeItem("routeCache");
               window.location.reload();
             }}
             className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors mr-2"

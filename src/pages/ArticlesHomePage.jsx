@@ -140,13 +140,7 @@ function extractPoemContent(post) {
 
 // FIXED: Stricter repost filtering
 function isOriginalPost(post) {
-  // More comprehensive repost detection
-  return !post.reblogged_from_id && 
-         !post.reblogged_from_url && 
-         !post.reblogged_root_id &&
-         !post.reblogged_from_name &&
-         !post.reblogged_root_name &&
-         (!post.trail || post.trail.length === 0); // Trail indicates reblog chain
+  return !post.reblogged_from_id && !post.reblogged_root_id;
 }
 
 // Main component with manual routing

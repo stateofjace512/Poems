@@ -211,10 +211,10 @@ export default function ArticlesBlogsPage() {
             })
             .map((p) => {
               console.log('Processing post:', p.id, 'Type:', p.type);
-              
-              // Extract full content early
+            
+              // Extract full content first
               let fullContent = extractPoemContent(p);
-              
+            
               // Decide title
               let title;
               if (p.title) {
@@ -222,38 +222,26 @@ export default function ArticlesBlogsPage() {
               } else if (p.summary) {
                 title = p.summary;
               } else if (p.type === "quote" && p.text) {
-                // Quote posts fallback
+                // Quote posts fallback → first line of text
                 title = p.text.split("\n")[0].trim();
               } else if (fullContent) {
-                // Use the first line of the body as title
+                // Otherwise use the first line of the poem body
                 title = fullContent.split("\n")[0].trim();
               } else {
                 title = "Untitled";
               }
-              
-              // Strip title from body only if it's right at the start
+            
+              // Strip title from body only if it’s right at the start
               const normalizedBody = fullContent.trimStart();
               if (normalizedBody.toLowerCase().startsWith(title.toLowerCase())) {
                 fullContent = normalizedBody.slice(title.length).trimStart();
               }
-
-
-              // FIXED: Extract full content using enhanced function
-              let fullContent = extractPoemContent(p);
-              
-              // Strip only if the very start equals the title
-              const normalizedBody = fullContent.trimStart();
-              if (normalizedBody.toLowerCase().startsWith(title.toLowerCase())) {
-                fullContent = normalizedBody.slice(title.length).trimStart();
-              }
-
-              
+            
               console.log('Extracted content for', title, ':', fullContent.slice(0, 100) + '...');
-
-              
+            
               // Create description from content
               const description = fullContent.slice(0, 150) + (fullContent.length > 150 ? "..." : "");
-
+            
               return {
                 id: p.id,
                 title: title.trim(),
@@ -264,7 +252,7 @@ export default function ArticlesBlogsPage() {
                 originalLink: p.post_url,
                 type: p.type, // Keep track of post type for debugging
               };
-            });
+            })
 
           console.log('Processed posts:', processedPosts);
           setPosts(processedPosts);

@@ -35,6 +35,55 @@ function getCurrentRoute() {
   return match ? { type: 'poem', slug: match[1] } : { type: 'list' };
 }
 
+// Cache management
+const CACHE_KEY = 'tumblr_poems_cache';
+const CACHE_DURATION = 15 * 60 * 1000; // 15 minutes
+const ROUTE_CACHE_KEY = 'poem_routes_cache';
+
+function getCachedData() {
+  try {
+    const cached = sessionStorage.getItem(CACHE_KEY);
+    if (cached) {
+      const { data, timestamp } = JSON.parse(cached);
+      if (Date.now() - timestamp < CACHE_DURATION) {
+        return data;
+      }
+    }
+  } catch (e) {
+    console.warn('Error reading cache:', e);
+  }
+  return null;
+}
+
+function setCachedData(data) {
+  try {
+    sessionStorage.setItem(CACHE_KEY, JSON.stringify({
+      data,
+      timestamp: Date.now()
+    }));
+  } catch (e) {
+    console.warn('Error writing cache:', e);
+  }
+}
+
+function getCachedRoutes() {
+  try {
+    const cached = sessionStorage.getItem(ROUTE_CACHE_KEY);
+    return cached ? JSON.parse(cached) : [];
+  } catch (e) {
+    console.warn('Error reading route cache:', e);
+    return [];
+  }
+}
+
+function setCachedRoutes(routes) {
+  try {
+    sessionStorage.setItem(ROUTE_CACHE_KEY, JSON.stringify(routes));
+  } catch (e) {
+    console.warn('Error writing route cache:', e);
+  }
+}
+
 // Main component with manual routing
 export default function ArticlesBlogsPage() {
   const [currentRoute, setCurrentRoute] = useState(getCurrentRoute());
@@ -59,6 +108,15 @@ export default function ArticlesBlogsPage() {
         setLoading(true);
         setError(null);
         
+        // Try cache first
+        const cachedData = getCachedData();
+        if (cachedData) {
+          setPosts(cachedData);
+          setLoading(false);
+          return;
+        }
+
+        // Updated API path to match your netlify function
         const res = await fetch("/.netlify/functions/tumblr");
         const data = await res.json();
 
@@ -88,12 +146,26 @@ export default function ArticlesBlogsPage() {
           });
 
           setPosts(processedPosts);
+          // Cache the processed posts
+          setCachedData(processedPosts);
+          
+          // Cache valid routes for 404 prevention
+          const validRoutes = processedPosts.map(post => post.slug);
+          setCachedRoutes(validRoutes);
         } else {
           setError('No poems found');
         }
       } catch (error) {
         console.error('Error fetching poems:', error);
-        setError('Failed to load poems. Please try again later.');
+        
+        // Try to use stale cache as fallback
+        const staleCache = getCachedData();
+        if (staleCache) {
+          setPosts(staleCache);
+          setError(null);
+        } else {
+          setError('Failed to load poems. Please try again later.');
+        }
       } finally {
         setLoading(false);
       }
@@ -114,6 +186,19 @@ export default function ArticlesBlogsPage() {
     setCurrentRoute({ type: 'list' });
   };
 
+  // Check if current route is valid when posts are loaded
+  useEffect(() => {
+    if (currentRoute.type === 'poem' && posts.length > 0) {
+      const validSlugs = posts.map(p => p.slug);
+      const cachedRoutes = getCachedRoutes();
+      
+      // If current poem doesn't exist in posts or cache, redirect to list
+      if (!validSlugs.includes(currentRoute.slug) && !cachedRoutes.includes(currentRoute.slug)) {
+        navigateToList();
+      }
+    }
+  }, [posts, currentRoute]);
+
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-neutral-50 to-neutral-100">
@@ -125,7 +210,7 @@ export default function ArticlesBlogsPage() {
     );
   }
 
-  if (error) {
+  if (error && posts.length === 0) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-neutral-50 to-neutral-100">
         <div className="text-center">
@@ -147,6 +232,19 @@ export default function ArticlesBlogsPage() {
     const poem = posts.find(p => p.slug === currentRoute.slug);
     
     if (!poem) {
+      // Check if we have cached routes that might indicate this is a valid poem
+      const cachedRoutes = getCachedRoutes();
+      if (cachedRoutes.includes(currentRoute.slug)) {
+        return (
+          <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-neutral-50 to-neutral-100">
+            <div className="text-center">
+              <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-neutral-600 mx-auto mb-4"></div>
+              <p className="text-neutral-600">Loading poem...</p>
+            </div>
+          </div>
+        );
+      }
+      
       return (
         <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-neutral-50 to-neutral-100">
           <div className="text-center">
@@ -167,11 +265,11 @@ export default function ArticlesBlogsPage() {
   }
 
   // Render poem list page
-  return <PoemListPage posts={posts} onNavigateToPoem={navigateToPoem} />;
+  return <PoemListPage posts={posts} onNavigateToPoem={navigateToPoem} error={error} />;
 }
 
 // Poem list page component
-function PoemListPage({ posts, onNavigateToPoem }) {
+function PoemListPage({ posts, onNavigateToPoem, error }) {
   const grouped = groupByMonth(posts);
 
   return (
@@ -219,6 +317,11 @@ function PoemListPage({ posts, onNavigateToPoem }) {
                 <p className="text-xl text-neutral-600 italic">
                   Words from the heart, pulled fresh from Tumblr
                 </p>
+                {error && (
+                  <p className="text-sm text-amber-600 mt-2">
+                    ⚠ Using cached content - some poems may be outdated
+                  </p>
+                )}
               </div>
             </div>
           </div>

@@ -3,9 +3,14 @@ import Navigation from "../components/Navigation";
 
 export default function NotFound() {
   useEffect(() => {
-    // 🚨 auto-redirect if it's under /poem/
+    // If we ended up on NotFound while under /poem/,
+    // that means the slug really failed → bounce home
     if (window.location.pathname.startsWith("/poem/")) {
-      window.location.replace("/"); // push straight to homepage
+      // Small delay so the user doesn't feel an instant "flash"
+      const timer = setTimeout(() => {
+        window.location.replace("/");
+      }, 500);
+      return () => clearTimeout(timer);
     }
   }, []);
 
@@ -48,7 +53,6 @@ export default function NotFound() {
         <rect width="100%" height="100%" filter="url(#noiseFilter)" />
       </svg>
 
-      {/* Navigation */}
       <Navigation />
 
       {/* 404 Content */}

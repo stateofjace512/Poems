@@ -35,56 +35,33 @@ function getCurrentRoute() {
   return match ? { type: 'poem', slug: match[1] } : { type: 'list' };
 }
 
-// Cache management - Using localStorage for persistence across sessions
-const CACHE_KEY = 'tumblr_poems_cache';
-const CACHE_DURATION = 24 * 60 * 60 * 1000; // 24 hours (86,400,000 milliseconds)
-const ROUTE_CACHE_KEY = 'poem_routes_cache';
+// In-memory cache management (NO localStorage)
+let poemCache = null;
+let cacheTimestamp = null;
+let routeCache = [];
+const CACHE_DURATION = 24 * 60 * 60 * 1000; // 24 hours
 
 function getCachedData() {
-  try {
-    const cached = localStorage.getItem(CACHE_KEY);
-    if (cached) {
-      const { data, timestamp } = JSON.parse(cached);
-      if (Date.now() - timestamp < CACHE_DURATION) {
-        return data;
-      }
-    }
-  } catch (e) {
-    console.warn('Error reading cache:', e);
+  if (poemCache && cacheTimestamp && (Date.now() - cacheTimestamp < CACHE_DURATION)) {
+    return poemCache;
   }
   return null;
 }
 
 function setCachedData(data) {
-  try {
-    localStorage.setItem(CACHE_KEY, JSON.stringify({
-      data,
-      timestamp: Date.now()
-    }));
-  } catch (e) {
-    console.warn('Error writing cache:', e);
-  }
+  poemCache = data;
+  cacheTimestamp = Date.now();
 }
 
 function getCachedRoutes() {
-  try {
-    const cached = localStorage.getItem(ROUTE_CACHE_KEY);
-    return cached ? JSON.parse(cached) : [];
-  } catch (e) {
-    console.warn('Error reading route cache:', e);
-    return [];
-  }
+  return routeCache || [];
 }
 
 function setCachedRoutes(routes) {
-  try {
-    localStorage.setItem(ROUTE_CACHE_KEY, JSON.stringify(routes));
-  } catch (e) {
-    console.warn('Error writing route cache:', e);
-  }
+  routeCache = routes || [];
 }
 
-// Enhanced content extraction function
+// Enhanced content extraction function - FIXED for line breaks and unicode
 function extractPoemContent(post) {
   let fullContent = '';
   
@@ -96,6 +73,8 @@ function extractPoemContent(post) {
       .replace(/<\/p>\s*<p[^>]*>/gi, '\n\n') // Convert paragraph breaks to double line breaks
       .replace(/<p[^>]*>/gi, '') // Remove opening paragraph tags
       .replace(/<\/p>/gi, '\n') // Convert closing paragraph tags to line breaks
+      .replace(/<div[^>]*>/gi, '') // Remove div tags
+      .replace(/<\/div>/gi, '\n') // Convert closing div to line break
       .replace(/<[^>]+>/g, '') // Remove all other HTML tags
       .trim();
   } else if (post.content && Array.isArray(post.content)) {
@@ -111,6 +90,8 @@ function extractPoemContent(post) {
           .replace(/<\/p>\s*<p[^>]*>/gi, '\n\n')
           .replace(/<p[^>]*>/gi, '')
           .replace(/<\/p>/gi, '\n')
+          .replace(/<div[^>]*>/gi, '')
+          .replace(/<\/div>/gi, '\n')
           .replace(/<[^>]+>/g, "");
         return text.trim();
       })
@@ -125,7 +106,7 @@ function extractPoemContent(post) {
     fullContent = post.summary.trim();
   }
   
-  // Clean up the content while preserving intentional line breaks
+  // FIXED: Proper Unicode entity decoding while preserving line breaks
   fullContent = fullContent
     .replace(/&nbsp;/g, ' ') // Replace non-breaking spaces
     .replace(/&amp;/g, '&') // Replace HTML entities
@@ -133,19 +114,38 @@ function extractPoemContent(post) {
     .replace(/&gt;/g, '>')
     .replace(/&quot;/g, '"')
     .replace(/&#39;/g, "'")
-    .replace(/&rsquo;/g, "'") // Right single quotation mark
-    .replace(/&lsquo;/g, "'") // Left single quotation mark
-    .replace(/&rdquo;/g, '"') // Right double quotation mark
-    .replace(/&ldquo;/g, '"') // Left double quotation mark
-    .replace(/&mdash;/g, '—') // Em dash
-    .replace(/&ndash;/g, '–') // En dash
-    .replace(/&hellip;/g, '…') // Ellipsis
+    .replace(/&rsquo;/g, ''') // Right single quotation mark - PROPER UNICODE
+    .replace(/&lsquo;/g, ''') // Left single quotation mark - PROPER UNICODE
+    .replace(/&rdquo;/g, '"') // Right double quotation mark - PROPER UNICODE
+    .replace(/&ldquo;/g, '"') // Left double quotation mark - PROPER UNICODE
+    .replace(/&mdash;/g, '—') // Em dash - PROPER UNICODE
+    .replace(/&ndash;/g, '–') // En dash - PROPER UNICODE
+    .replace(/&hellip;/g, '…') // Ellipsis - PROPER UNICODE
+    .replace(/&#8217;/g, ''') // Numeric entity for right single quote
+    .replace(/&#8216;/g, ''') // Numeric entity for left single quote  
+    .replace(/&#8221;/g, '"') // Numeric entity for right double quote
+    .replace(/&#8220;/g, '"') // Numeric entity for left double quote
+    .replace(/&#8212;/g, '—') // Numeric entity for em dash
+    .replace(/&#8211;/g, '–') // Numeric entity for en dash
+    .replace(/&#8230;/g, '…') // Numeric entity for ellipsis
     .replace(/\r\n/g, '\n') // Normalize Windows line endings
     .replace(/\r/g, '\n') // Normalize old Mac line endings
-    .replace(/\n\s*\n\s*\n/g, '\n\n') // Convert triple+ line breaks to double
+    // PRESERVE line breaks - don't collapse them!
+    .replace(/\n{3,}/g, '\n\n') // Convert triple+ line breaks to double (but keep doubles!)
     .replace(/^\s+|\s+$/g, ''); // Trim leading/trailing whitespace only
   
   return fullContent;
+}
+
+// FIXED: Stricter repost filtering
+function isOriginalPost(post) {
+  // More comprehensive repost detection
+  return !post.reblogged_from_id && 
+         !post.reblogged_from_url && 
+         !post.reblogged_root_id &&
+         !post.reblogged_from_name &&
+         !post.reblogged_root_name &&
+         (!post.trail || post.trail.length === 0); // Trail indicates reblog chain
 }
 
 // Main component with manual routing
@@ -190,8 +190,12 @@ export default function ArticlesBlogsPage() {
         if (data.response?.posts) {
           const processedPosts = data.response.posts
             .filter((p) => {
-              // Filter out reblogs - only show original posts
-              return !p.reblogged_from_id && !p.reblogged_from_url && !p.reblogged_root_id;
+              // FIXED: Stricter original post filtering
+              const isOriginal = isOriginalPost(p);
+              if (!isOriginal) {
+                console.log('Filtering out reblog:', p.id, p.summary?.slice(0, 50));
+              }
+              return isOriginal;
             })
             .map((p) => {
               console.log('Processing post:', p.id, 'Type:', p.type);
@@ -204,9 +208,10 @@ export default function ArticlesBlogsPage() {
                 title = p.text.slice(0, 50) + (p.text.length > 50 ? '...' : '');
               }
               
-              // Extract full content using enhanced function
+              // FIXED: Extract full content using enhanced function
               const fullContent = extractPoemContent(p);
               console.log('Extracted content for', title, ':', fullContent.slice(0, 100) + '...');
+              console.log('Content has line breaks:', fullContent.includes('\n'));
               
               // Create description from content
               const description = fullContent.slice(0, 150) + (fullContent.length > 150 ? "..." : "");
@@ -298,12 +303,12 @@ export default function ArticlesBlogsPage() {
         <div className="text-center">
           <h1 className="text-2xl font-bold text-red-600 mb-4">Error Loading Poems</h1>
           <p className="text-neutral-600 mb-4">{error}</p>
-          // Force a fresh fetch and clear cache
           <button 
             onClick={() => {
-              // Clear cache and reload
-              localStorage.removeItem(CACHE_KEY);
-              localStorage.removeItem(ROUTE_CACHE_KEY);
+              // FIXED: Clear in-memory cache and reload
+              poemCache = null;
+              cacheTimestamp = null;
+              routeCache = [];
               window.location.reload();
             }}
             className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors mr-2"
@@ -478,7 +483,7 @@ function PoemListPage({ posts, onNavigateToPoem, error }) {
   );
 }
 
-// Individual poem detail page component
+// Individual poem detail page component - FIXED line break preservation
 function PoemDetailPage({ poem, onBack }) {
   const formattedDate = new Date(poem.date).toLocaleDateString('en-US', { 
     month: 'long', 
@@ -558,6 +563,7 @@ function PoemDetailPage({ poem, onBack }) {
               <p>Post Type: {poem.type}</p>
               <p>Content Length: {poem.fullContent.length}</p>
               <p>Has Title: {poem.title ? 'Yes' : 'No'}</p>
+              <p>Line breaks in content: {poem.fullContent.split('\n').length - 1}</p>
             </div>
           )}
 
@@ -577,7 +583,7 @@ function PoemDetailPage({ poem, onBack }) {
                   </p>
                 </div>
 
-                {/* Poem content */}
+                {/* FIXED: Poem content with preserved line breaks */}
                 <div className="prose prose-lg max-w-none text-neutral-800 leading-relaxed">
                   {poem.fullContent === 'Content not available' ? (
                     <div className="text-center text-neutral-500 italic py-8">
@@ -592,11 +598,9 @@ function PoemDetailPage({ poem, onBack }) {
                       </a>
                     </div>
                   ) : (
-                    poem.fullContent.split('\n\n').map((paragraph, index) => (
-                      <p key={index} className="mb-6 text-lg leading-8 whitespace-pre-line">
-                        {paragraph}
-                      </p>
-                    ))
+                    <div className="text-lg leading-8 whitespace-pre-wrap font-serif">
+                      {poem.fullContent}
+                    </div>
                   )}
                 </div>
 

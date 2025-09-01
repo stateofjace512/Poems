@@ -35,14 +35,14 @@ function getCurrentRoute() {
   return match ? { type: 'poem', slug: match[1] } : { type: 'list' };
 }
 
-// Cache management
+// Cache management - Using localStorage for persistence across sessions
 const CACHE_KEY = 'tumblr_poems_cache';
-const CACHE_DURATION = 15 * 60 * 1000; // 15 minutes
+const CACHE_DURATION = 2 * 60 * 60 * 1000; // 2 hours instead of 15 minutes
 const ROUTE_CACHE_KEY = 'poem_routes_cache';
 
 function getCachedData() {
   try {
-    const cached = sessionStorage.getItem(CACHE_KEY);
+    const cached = localStorage.getItem(CACHE_KEY);
     if (cached) {
       const { data, timestamp } = JSON.parse(cached);
       if (Date.now() - timestamp < CACHE_DURATION) {
@@ -57,7 +57,7 @@ function getCachedData() {
 
 function setCachedData(data) {
   try {
-    sessionStorage.setItem(CACHE_KEY, JSON.stringify({
+    localStorage.setItem(CACHE_KEY, JSON.stringify({
       data,
       timestamp: Date.now()
     }));
@@ -68,7 +68,7 @@ function setCachedData(data) {
 
 function getCachedRoutes() {
   try {
-    const cached = sessionStorage.getItem(ROUTE_CACHE_KEY);
+    const cached = localStorage.getItem(ROUTE_CACHE_KEY);
     return cached ? JSON.parse(cached) : [];
   } catch (e) {
     console.warn('Error reading route cache:', e);
@@ -78,10 +78,52 @@ function getCachedRoutes() {
 
 function setCachedRoutes(routes) {
   try {
-    sessionStorage.setItem(ROUTE_CACHE_KEY, JSON.stringify(routes));
+    localStorage.setItem(ROUTE_CACHE_KEY, JSON.stringify(routes));
   } catch (e) {
     console.warn('Error writing route cache:', e);
   }
+}
+
+// Enhanced content extraction function
+function extractPoemContent(post) {
+  let fullContent = '';
+  
+  // Try different content fields based on Tumblr API response structure
+  if (post.body) {
+    // HTML content in body field
+    fullContent = post.body.replace(/<[^>]+>/g, '').trim();
+  } else if (post.content && Array.isArray(post.content)) {
+    // Content array format
+    const textBlocks = post.content
+      .filter((c) => c.type === "text")
+      .map((c) => {
+        // Handle both text and formatted content
+        const text = c.text || c.content || '';
+        return text.replace(/<[^>]+>/g, "").trim();
+      })
+      .filter(text => text.length > 0);
+    
+    fullContent = textBlocks.join('\n\n');
+  } else if (post.text) {
+    // Plain text field
+    fullContent = post.text.trim();
+  } else if (post.summary) {
+    // Fallback to summary
+    fullContent = post.summary.trim();
+  }
+  
+  // Clean up the content
+  fullContent = fullContent
+    .replace(/\n{3,}/g, '\n\n') // Replace multiple line breaks with double
+    .replace(/^\s+|\s+$/g, '') // Trim whitespace
+    .replace(/&nbsp;/g, ' ') // Replace non-breaking spaces
+    .replace(/&amp;/g, '&') // Replace HTML entities
+    .replace(/&lt;/g, '<')
+    .replace(/&gt;/g, '>')
+    .replace(/&quot;/g, '"')
+    .replace(/&#39;/g, "'");
+  
+  return fullContent;
 }
 
 // Main component with manual routing
@@ -111,41 +153,52 @@ export default function ArticlesBlogsPage() {
         // Try cache first
         const cachedData = getCachedData();
         if (cachedData) {
+          console.log('Using cached data:', cachedData.length, 'posts');
           setPosts(cachedData);
           setLoading(false);
           return;
         }
 
-        // Updated API path to match your netlify function
+        console.log('Fetching fresh data from Tumblr API...');
         const res = await fetch("/.netlify/functions/tumblr");
         const data = await res.json();
 
+        console.log('Raw Tumblr API response:', data);
+
         if (data.response?.posts) {
           const processedPosts = data.response.posts.map((p) => {
-            const title = p.title || p.summary || "Untitled";
+            console.log('Processing post:', p.id, 'Type:', p.type);
             
-            // Get full content for the poem
-            const textBlocks = (p.content || [])
-              .filter((c) => c.type === "text")
-              .map((c) => c.text.replace(/<[^>]+>/g, "").trim());
-
-            const firstNonTitleText =
-              textBlocks.find((t) => t && t !== title) || p.summary || "";
-
-            const fullContent = textBlocks.join('\n\n');
+            // Get title with better fallbacks
+            let title = p.title || p.summary || "Untitled";
+            
+            // For quote posts, use the quote text as title if no title exists
+            if (!p.title && p.type === 'quote' && p.text) {
+              title = p.text.slice(0, 50) + (p.text.length > 50 ? '...' : '');
+            }
+            
+            // Extract full content using enhanced function
+            const fullContent = extractPoemContent(p);
+            console.log('Extracted content for', title, ':', fullContent.slice(0, 100) + '...');
+            
+            // Create description from content
+            const description = fullContent.slice(0, 150) + (fullContent.length > 150 ? "..." : "");
 
             return {
               id: p.id,
-              title,
+              title: title.trim(),
               slug: createSlug(title),
-              description: firstNonTitleText.slice(0, 150) + (firstNonTitleText.length > 150 ? "..." : ""),
-              fullContent: fullContent || firstNonTitleText,
+              description: description || "No preview available",
+              fullContent: fullContent || "Content not available",
               date: p.date,
               originalLink: p.post_url,
+              type: p.type, // Keep track of post type for debugging
             };
           });
 
+          console.log('Processed posts:', processedPosts);
           setPosts(processedPosts);
+          
           // Cache the processed posts
           setCachedData(processedPosts);
           
@@ -153,7 +206,8 @@ export default function ArticlesBlogsPage() {
           const validRoutes = processedPosts.map(post => post.slug);
           setCachedRoutes(validRoutes);
         } else {
-          setError('No poems found');
+          console.error('No posts found in response:', data);
+          setError('No poems found in the API response');
         }
       } catch (error) {
         console.error('Error fetching poems:', error);
@@ -161,8 +215,9 @@ export default function ArticlesBlogsPage() {
         // Try to use stale cache as fallback
         const staleCache = getCachedData();
         if (staleCache) {
+          console.log('Using stale cache as fallback');
           setPosts(staleCache);
-          setError(null);
+          setError('Using cached content - data may be outdated');
         } else {
           setError('Failed to load poems. Please try again later.');
         }
@@ -217,10 +272,21 @@ export default function ArticlesBlogsPage() {
           <h1 className="text-2xl font-bold text-red-600 mb-4">Error Loading Poems</h1>
           <p className="text-neutral-600 mb-4">{error}</p>
           <button 
-            onClick={() => window.location.reload()}
-            className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+            onClick={() => {
+              // Clear cache and reload
+              localStorage.removeItem(CACHE_KEY);
+              localStorage.removeItem(ROUTE_CACHE_KEY);
+              window.location.reload();
+            }}
+            className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors mr-2"
           >
-            Try Again
+            Clear Cache & Try Again
+          </button>
+          <button 
+            onClick={() => window.location.reload()}
+            className="px-4 py-2 bg-gray-600 text-white rounded-lg hover:bg-gray-700 transition-colors"
+          >
+            Retry
           </button>
         </div>
       </div>
@@ -457,6 +523,16 @@ function PoemDetailPage({ poem, onBack }) {
             Back to Poetry Corner
           </button>
 
+          {/* Debug info (remove in production) */}
+          {process.env.NODE_ENV === 'development' && (
+            <div className="mb-4 p-4 bg-yellow-100 border border-yellow-300 rounded-lg text-sm">
+              <p><strong>Debug Info:</strong></p>
+              <p>Post Type: {poem.type}</p>
+              <p>Content Length: {poem.fullContent.length}</p>
+              <p>Has Title: {poem.title ? 'Yes' : 'No'}</p>
+            </div>
+          )}
+
           {/* Poem container */}
           <div className="relative">
             <div className="absolute -inset-4 rounded-2xl bg-gradient-to-b from-white to-neutral-200 shadow-[0_25px_50px_rgba(0,0,0,0.25)]" />
@@ -475,11 +551,25 @@ function PoemDetailPage({ poem, onBack }) {
 
                 {/* Poem content */}
                 <div className="prose prose-lg max-w-none text-neutral-800 leading-relaxed">
-                  {poem.fullContent.split('\n\n').map((paragraph, index) => (
-                    <p key={index} className="mb-6 text-lg leading-8 whitespace-pre-line">
-                      {paragraph}
-                    </p>
-                  ))}
+                  {poem.fullContent === 'Content not available' ? (
+                    <div className="text-center text-neutral-500 italic py-8">
+                      <p>This poem's content could not be loaded.</p>
+                      <a
+                        href={poem.originalLink}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="text-blue-600 hover:text-blue-700 underline"
+                      >
+                        View on Tumblr instead →
+                      </a>
+                    </div>
+                  ) : (
+                    poem.fullContent.split('\n\n').map((paragraph, index) => (
+                      <p key={index} className="mb-6 text-lg leading-8 whitespace-pre-line">
+                        {paragraph}
+                      </p>
+                    ))
+                  )}
                 </div>
 
                 {/* Actions */}

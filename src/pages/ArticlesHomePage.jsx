@@ -37,7 +37,7 @@ function getCurrentRoute() {
 
 // Cache management - Using localStorage for persistence across sessions
 const CACHE_KEY = 'tumblr_poems_cache';
-const CACHE_DURATION = 2 * 60 * 60 * 1000; // 2 hours instead of 15 minutes
+const CACHE_DURATION = 24 * 60 * 60 * 1000; // 24 hours (86,400,000 milliseconds)
 const ROUTE_CACHE_KEY = 'poem_routes_cache';
 
 function getCachedData() {
@@ -90,16 +90,29 @@ function extractPoemContent(post) {
   
   // Try different content fields based on Tumblr API response structure
   if (post.body) {
-    // HTML content in body field
-    fullContent = post.body.replace(/<[^>]+>/g, '').trim();
+    // HTML content in body field - preserve line breaks from HTML
+    fullContent = post.body
+      .replace(/<br\s*\/?>/gi, '\n') // Convert <br> tags to line breaks
+      .replace(/<\/p>\s*<p[^>]*>/gi, '\n\n') // Convert paragraph breaks to double line breaks
+      .replace(/<p[^>]*>/gi, '') // Remove opening paragraph tags
+      .replace(/<\/p>/gi, '\n') // Convert closing paragraph tags to line breaks
+      .replace(/<[^>]+>/g, '') // Remove all other HTML tags
+      .trim();
   } else if (post.content && Array.isArray(post.content)) {
     // Content array format
     const textBlocks = post.content
       .filter((c) => c.type === "text")
       .map((c) => {
         // Handle both text and formatted content
-        const text = c.text || c.content || '';
-        return text.replace(/<[^>]+>/g, "").trim();
+        let text = c.text || c.content || '';
+        // Preserve line breaks in content array format too
+        text = text
+          .replace(/<br\s*\/?>/gi, '\n')
+          .replace(/<\/p>\s*<p[^>]*>/gi, '\n\n')
+          .replace(/<p[^>]*>/gi, '')
+          .replace(/<\/p>/gi, '\n')
+          .replace(/<[^>]+>/g, "");
+        return text.trim();
       })
       .filter(text => text.length > 0);
     
@@ -112,16 +125,25 @@ function extractPoemContent(post) {
     fullContent = post.summary.trim();
   }
   
-  // Clean up the content
+  // Clean up the content while preserving intentional line breaks
   fullContent = fullContent
-    .replace(/\n{3,}/g, '\n\n') // Replace multiple line breaks with double
-    .replace(/^\s+|\s+$/g, '') // Trim whitespace
     .replace(/&nbsp;/g, ' ') // Replace non-breaking spaces
     .replace(/&amp;/g, '&') // Replace HTML entities
     .replace(/&lt;/g, '<')
     .replace(/&gt;/g, '>')
     .replace(/&quot;/g, '"')
-    .replace(/&#39;/g, "'");
+    .replace(/&#39;/g, "'")
+    .replace(/&rsquo;/g, "'") // Right single quotation mark
+    .replace(/&lsquo;/g, "'") // Left single quotation mark
+    .replace(/&rdquo;/g, '"') // Right double quotation mark
+    .replace(/&ldquo;/g, '"') // Left double quotation mark
+    .replace(/&mdash;/g, '—') // Em dash
+    .replace(/&ndash;/g, '–') // En dash
+    .replace(/&hellip;/g, '…') // Ellipsis
+    .replace(/\r\n/g, '\n') // Normalize Windows line endings
+    .replace(/\r/g, '\n') // Normalize old Mac line endings
+    .replace(/\n\s*\n\s*\n/g, '\n\n') // Convert triple+ line breaks to double
+    .replace(/^\s+|\s+$/g, ''); // Trim leading/trailing whitespace only
   
   return fullContent;
 }
@@ -166,35 +188,40 @@ export default function ArticlesBlogsPage() {
         console.log('Raw Tumblr API response:', data);
 
         if (data.response?.posts) {
-          const processedPosts = data.response.posts.map((p) => {
-            console.log('Processing post:', p.id, 'Type:', p.type);
-            
-            // Get title with better fallbacks
-            let title = p.title || p.summary || "Untitled";
-            
-            // For quote posts, use the quote text as title if no title exists
-            if (!p.title && p.type === 'quote' && p.text) {
-              title = p.text.slice(0, 50) + (p.text.length > 50 ? '...' : '');
-            }
-            
-            // Extract full content using enhanced function
-            const fullContent = extractPoemContent(p);
-            console.log('Extracted content for', title, ':', fullContent.slice(0, 100) + '...');
-            
-            // Create description from content
-            const description = fullContent.slice(0, 150) + (fullContent.length > 150 ? "..." : "");
+          const processedPosts = data.response.posts
+            .filter((p) => {
+              // Filter out reblogs - only show original posts
+              return !p.reblogged_from_id && !p.reblogged_from_url && !p.reblogged_root_id;
+            })
+            .map((p) => {
+              console.log('Processing post:', p.id, 'Type:', p.type);
+              
+              // Get title with better fallbacks
+              let title = p.title || p.summary || "Untitled";
+              
+              // For quote posts, use the quote text as title if no title exists
+              if (!p.title && p.type === 'quote' && p.text) {
+                title = p.text.slice(0, 50) + (p.text.length > 50 ? '...' : '');
+              }
+              
+              // Extract full content using enhanced function
+              const fullContent = extractPoemContent(p);
+              console.log('Extracted content for', title, ':', fullContent.slice(0, 100) + '...');
+              
+              // Create description from content
+              const description = fullContent.slice(0, 150) + (fullContent.length > 150 ? "..." : "");
 
-            return {
-              id: p.id,
-              title: title.trim(),
-              slug: createSlug(title),
-              description: description || "No preview available",
-              fullContent: fullContent || "Content not available",
-              date: p.date,
-              originalLink: p.post_url,
-              type: p.type, // Keep track of post type for debugging
-            };
-          });
+              return {
+                id: p.id,
+                title: title.trim(),
+                slug: createSlug(title),
+                description: description || "No preview available",
+                fullContent: fullContent || "Content not available",
+                date: p.date,
+                originalLink: p.post_url,
+                type: p.type, // Keep track of post type for debugging
+              };
+            });
 
           console.log('Processed posts:', processedPosts);
           setPosts(processedPosts);
@@ -271,6 +298,7 @@ export default function ArticlesBlogsPage() {
         <div className="text-center">
           <h1 className="text-2xl font-bold text-red-600 mb-4">Error Loading Poems</h1>
           <p className="text-neutral-600 mb-4">{error}</p>
+          // Force a fresh fetch and clear cache
           <button 
             onClick={() => {
               // Clear cache and reload
@@ -280,7 +308,7 @@ export default function ArticlesBlogsPage() {
             }}
             className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors mr-2"
           >
-            Clear Cache & Try Again
+            Clear Cache & Refresh
           </button>
           <button 
             onClick={() => window.location.reload()}

@@ -108,31 +108,32 @@ function extractPoemContent(post) {
   
   // FIXED: Proper Unicode entity decoding while preserving line breaks
   fullContent = fullContent
-    .replace(/&nbsp;/g, ' ') // Replace non-breaking spaces
-    .replace(/&amp;/g, '&') // Replace HTML entities
-    .replace(/&lt;/g, '<')
-    .replace(/&gt;/g, '>')
-    .replace(/&quot;/g, '"')
+    .replace(/&nbsp;/g, " ") // Replace non-breaking spaces
+    .replace(/&amp;/g, "&") // Replace HTML entities
+    .replace(/&lt;/g, "<")
+    .replace(/&gt;/g, ">")
+    .replace(/&quot;/g, "\"")
     .replace(/&#39;/g, "'")
-    .replace(/&rsquo;/g, ''') // Right single quotation mark - PROPER UNICODE
-    .replace(/&lsquo;/g, ''') // Left single quotation mark - PROPER UNICODE
-    .replace(/&rdquo;/g, '"') // Right double quotation mark - PROPER UNICODE
-    .replace(/&ldquo;/g, '"') // Left double quotation mark - PROPER UNICODE
-    .replace(/&mdash;/g, '—') // Em dash - PROPER UNICODE
-    .replace(/&ndash;/g, '–') // En dash - PROPER UNICODE
-    .replace(/&hellip;/g, '…') // Ellipsis - PROPER UNICODE
-    .replace(/&#8217;/g, ''') // Numeric entity for right single quote
-    .replace(/&#8216;/g, ''') // Numeric entity for left single quote  
-    .replace(/&#8221;/g, '"') // Numeric entity for right double quote
-    .replace(/&#8220;/g, '"') // Numeric entity for left double quote
-    .replace(/&#8212;/g, '—') // Numeric entity for em dash
-    .replace(/&#8211;/g, '–') // Numeric entity for en dash
-    .replace(/&#8230;/g, '…') // Numeric entity for ellipsis
-    .replace(/\r\n/g, '\n') // Normalize Windows line endings
-    .replace(/\r/g, '\n') // Normalize old Mac line endings
+    .replace(/&rsquo;/g, "'") // Right single quotation mark - PROPER UNICODE
+    .replace(/&lsquo;/g, "'") // Left single quotation mark - PROPER UNICODE
+    .replace(/&rdquo;/g, "\"") // Right double quotation mark - PROPER UNICODE
+    .replace(/&ldquo;/g, "\"") // Left double quotation mark - PROPER UNICODE
+    .replace(/&mdash;/g, "—") // Em dash - PROPER UNICODE
+    .replace(/&ndash;/g, "–") // En dash - PROPER UNICODE
+    .replace(/&hellip;/g, "…") // Ellipsis - PROPER UNICODE
+    .replace(/&#8217;/g, "'") // Numeric entity for right single quote
+    .replace(/&#8216;/g, "'") // Numeric entity for left single quote  
+    .replace(/&#8221;/g, "\"") // Numeric entity for right double quote
+    .replace(/&#8220;/g, "\"") // Numeric entity for left double quote
+    .replace(/&#8212;/g, "—") // Numeric entity for em dash
+    .replace(/&#8211;/g, "–") // Numeric entity for en dash
+    .replace(/&#8230;/g, "…") // Numeric entity for ellipsis
+    .replace(/\r\n/g, "\n") // Normalize Windows line endings
+    .replace(/\r/g, "\n") // Normalize old Mac line endings
     // PRESERVE line breaks - don't collapse them!
-    .replace(/\n{3,}/g, '\n\n') // Convert triple+ line breaks to double (but keep doubles!)
-    .replace(/^\s+|\s+$/g, ''); // Trim leading/trailing whitespace only
+    .replace(/\n{3,}/g, "\n\n") // Convert triple+ line breaks to double (but keep doubles!)
+    .replace(/^\s+|\s+$/g, ""); // Trim leading/trailing whitespace only
+
   
   return fullContent;
 }

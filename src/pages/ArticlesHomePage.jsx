@@ -78,26 +78,6 @@ function getCurrentRoute() {
   return match ? { type: 'poem', slug: match[1] } : { type: 'list' };
 }
 
-function getCachedData() {
-  if (poemCache && cacheTimestamp && (Date.now() - cacheTimestamp < CACHE_DURATION)) {
-    return poemCache;
-  }
-  return null;
-}
-
-function setCachedData(data) {
-  poemCache = data;
-  cacheTimestamp = Date.now();
-}
-
-function getCachedRoutes() {
-  return routeCache || [];
-}
-
-function setCachedRoutes(routes) {
-  routeCache = routes || [];
-}
-
 // Enhanced content extraction function - FIXED for line breaks and unicode
 function extractPoemContent(post) {
   let fullContent = '';

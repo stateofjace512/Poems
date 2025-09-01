@@ -212,21 +212,41 @@ export default function ArticlesBlogsPage() {
             .map((p) => {
               console.log('Processing post:', p.id, 'Type:', p.type);
               
-              // Get title with better fallbacks
-              let title = p.title || p.summary || "Untitled";
+              // Extract full content early
+              let fullContent = extractPoemContent(p);
               
-              // For quote posts, use the quote text as title if no title exists
-              if (!p.title && p.type === 'quote' && p.text) {
-                title = p.text.slice(0, 50) + (p.text.length > 50 ? '...' : '');
+              // Decide title
+              let title;
+              if (p.title) {
+                title = p.title;
+              } else if (p.summary) {
+                title = p.summary;
+              } else if (p.type === "quote" && p.text) {
+                // Quote posts fallback
+                title = p.text.split("\n")[0].trim();
+              } else if (fullContent) {
+                // Use the first line of the body as title
+                title = fullContent.split("\n")[0].trim();
+              } else {
+                title = "Untitled";
               }
               
+              // Strip title from body only if it's right at the start
+              const normalizedBody = fullContent.trimStart();
+              if (normalizedBody.toLowerCase().startsWith(title.toLowerCase())) {
+                fullContent = normalizedBody.slice(title.length).trimStart();
+              }
+
+
               // FIXED: Extract full content using enhanced function
               let fullContent = extractPoemContent(p);
               
-              // Strip title from body if duplicated
-              if (fullContent.startsWith(title)) {
-                fullContent = fullContent.slice(title.length).trimStart();
+              // Strip only if the very start equals the title
+              const normalizedBody = fullContent.trimStart();
+              if (normalizedBody.toLowerCase().startsWith(title.toLowerCase())) {
+                fullContent = normalizedBody.slice(title.length).trimStart();
               }
+
               
               console.log('Extracted content for', title, ':', fullContent.slice(0, 100) + '...');
 
